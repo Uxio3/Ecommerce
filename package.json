@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/Uxio3/Ecommerce/issues"
   },
-  "homepage": "https://github.com/Uxio3/Ecommerce#readme"
+  "homepage": "https://github.com/Uxio3/Ecommerce#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.3"
+  }
 }
