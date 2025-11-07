@@ -4,11 +4,17 @@ require('dotenv').config();
 // Importar Express
 const express = require('express');
 
+// Importar CORS
+const cors = require('cors');
+
 // Importar mysql2
 const mysql = require('mysql2/promise');
 
 // Crear una instancia de la aplicación Express
 const app = express();
+
+// Configurar CORS para permitir peticiones desde cualquier origen
+app.use(cors());
 
 // Definir el puerto, 3000 por defecto
 const PORT = process.env.PORT || 3000;
