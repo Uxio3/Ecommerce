@@ -16,6 +16,9 @@ const app = express();
 // Configurar CORS para permitir peticiones desde cualquier origen
 app.use(cors());
 
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static('public'));
+
 // Definir el puerto, 3000 por defecto
 const PORT = process.env.PORT || 3000;
 
