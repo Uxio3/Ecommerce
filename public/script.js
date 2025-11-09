@@ -6,6 +6,9 @@ const productsContainer = document.getElementById('products-container');
 const loading = document.getElementById('loading');
 const errorDiv = document.getElementById('error');
 
+// Ruta del placeholder local (asegúrate de que existe)
+const PLACEHOLDER_IMAGE = 'images/placeholder.svg';
+
 // Función para formatear el precio
 function formatPrice(price) {
     return new Intl.NumberFormat('es-ES', {
@@ -22,12 +25,13 @@ function createProductCard(product) {
     const inStock = product.stock > 0;
     const stockClass = inStock ? 'in-stock' : 'out-of-stock';
     const stockText = inStock ? `En stock: ${product.stock} unidades` : 'Sin stock';
+    const imageSrc = product.img_url ? product.img_url : PLACEHOLDER_IMAGE;
 
     card.innerHTML = `
-        <img src="${product.img_url || 'https://via.placeholder.com/300'}"
-            alt="${product.name}"
-            class="product-image"
-            onerror="this.src='https://via.placeholder.com/300'">
+        <img src="${imageSrc}"
+             alt="${product.name}"
+             class="product-image"
+             onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}'">
         <h2 class="product-name">${product.name}</h2>
         <p class="product-description">${product.description || 'Sin descripción'}</p>
         <div class="product-price">${formatPrice(product.price)}</div>
@@ -69,7 +73,7 @@ async function loadProducts() {
             productsContainer.innerHTML = '<p style="color: white; text-align: center; grid-column: 1 / -1;">No hay productos disponibles</p>';
         } else {
             products.forEach(product => {
-                const card= createElement(product);
+                const card = createProductCard(product);
                 productsContainer.appendChild(card);
             });
         }
@@ -83,5 +87,5 @@ async function loadProducts() {
     }
 }
 
-// cargar productos cuando secarga la página
+// Cargar productos cuando se carga la página
 document.addEventListener('DOMContentLoaded', loadProducts);

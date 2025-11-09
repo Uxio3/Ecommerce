@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #b2fefa 0%, #e7f0fd 100%);
     min-height: 100vh;
     padding: 20px;
 }
@@ -18,7 +18,7 @@ body {
 
 header {
     text-align: center;
-    color: white;
+    color: #2b2d42;
     margin-bottom: 40px;
 }
 
@@ -34,7 +34,7 @@ header p {
 
 .loading {
     text-align: center;
-    color: white;
+    color: #582f0e;
     font-size: 1.5rem;
     padding: 40px;
 }
@@ -94,7 +94,7 @@ header p {
 .product-price {
     font-size: 1.8rem;
     font-weight: bold;
-    color: #667eea;
+    color: #6a4c93;
     margin-bottom: 10px;
 }
 
@@ -105,19 +105,19 @@ header p {
 }
 
 .product-stock.in-stock {
-    color: #28a745;
+    color: #2a9d8f;
     font-weight: bold;
 }
 
 .product-stock.out-of-stock {
-    color: #dc3545;
+    color: #e63946 ;
     font-weight: bold;
 }
 
 .add-to-cart {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #5a8f7b 0%, #76b39d 100%);
     color: white;
     border: none;
     border-radius: 8px;
