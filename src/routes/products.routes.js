@@ -1,8 +1,29 @@
+// Definición de rutas relacionadas con /api/products
 const express = require('express');
-const { getProducts } = require('../controllers/products.controller');
+
+const {
+    getProducts,
+    getProduct,
+    createProductController,
+    updateProductController,
+    deleteProductController,
+} = require('../controllers/products.controller');
 
 const router = express.Router();
+
 // Asocia la ruta GET / a la función getProducts del controlador
 router.get('/', getProducts);
+
+// GET /api/products/:id → obtiene un producto específico por ID
+router.get('/:id', getProduct);
+
+// POST /api/products → crea un nuevo producto
+router.post('/', createProductController);
+
+// PUT /api/products/:id → actualiza un producto existente
+router.put('/:id', updateProductController);
+
+// DELETE /api/products/:id → elimina un producto
+router.delete('/:id', deleteProductController);
 
 module.exports = router;

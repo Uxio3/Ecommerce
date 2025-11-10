@@ -10,6 +10,7 @@ const app = express();
 
 // Middlewares globales
 app.use(cors());
+app.use(express.json()); // Parsea el body de las peticiones
 app.use(express.static('public'));
 
 // Rutas
