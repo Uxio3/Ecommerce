@@ -9,6 +9,8 @@ const {
     deleteProductController,
 } = require('../controllers/products.controller');
 
+const { productValidationRules, validate } = require('../middlewares/validation.middleware');
+
 const router = express.Router();
 
 // Asocia la ruta GET / a la función getProducts del controlador
@@ -18,10 +20,10 @@ router.get('/', getProducts);
 router.get('/:id', getProduct);
 
 // POST /api/products → crea un nuevo producto
-router.post('/', createProductController);
+router.post('/', productValidationRules, validate, createProductController);
 
 // PUT /api/products/:id → actualiza un producto existente
-router.put('/:id', updateProductController);
+router.put('/:id', productValidationRules, validate, updateProductController);
 
 // DELETE /api/products/:id → elimina un producto
 router.delete('/:id', deleteProductController);
