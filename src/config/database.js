@@ -1,5 +1,5 @@
 const mysql = require('mysql2/promise');
-
+// Parámetros de conexión leídos desde variables de entorno (.env)
 const dbConfig = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -10,9 +10,9 @@ const dbConfig = {
     connectionLimit: 10,
     queueLimit: 0,
 };
-
+// Pool de conexiones para reutilizarlas y mejorar rendimiento
 const pool = mysql.createPool(dbConfig);
-
+// Prueba que la conexión a MySQL funciona
 async function testConnection() {
     try {
         const connection = await pool.getConnection();
@@ -23,7 +23,7 @@ async function testConnection() {
         throw error;
     }
 }
-
+// Se exporta pool y testConnection
 module.exports = {
     pool,
     testConnection,
