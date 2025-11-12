@@ -15,9 +15,13 @@ const cartItems = document.getElementById('cart-items');
 const cartCount = document.getElementById('cart-count');
 const cartTotal = document.getElementById('cart-total');
 const checkoutBtn = document.getElementById('checkout-btn');
+const searchInput = document.getElementById('search-input');
 
 // Carrito (se carga desde localStorage)
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+// Variable para almacenar todos los productos (sin filtrar)
+let allProducts = [];
 
 // Función para formatear el precio
 function formatPrice(price) {
@@ -204,22 +208,16 @@ async function loadProducts() {
 
         const products = await response.json();
 
+        // Guardar todos los productos (sin filtrar)
+        allProducts = products;
+
         // Ocultar loading
         loading.style.display = 'none';
         productsContainer.style.display = 'grid';
 
-        // Limpiar el contenedor
-        productsContainer.innerHTML = '';
+        // Mostrar productos (con filtros aplicados)
+        displayProducts(products); // ✅ Solo esta línea, elimina el código duplicado de abajo
 
-        // Crear y agregar las tarjetas de productos
-        if (products.length === 0) {
-            productsContainer.innerHTML = '<p style="color: white; text-align: center; grid-column: 1 / -1;">No hay productos disponibles</p>';
-        } else {
-            products.forEach(product => {
-                const card = createProductCard(product);
-                productsContainer.appendChild(card);
-            });
-        }
     } catch (error) {
         console.error('Error:', error);
         
@@ -228,6 +226,48 @@ async function loadProducts() {
         productsContainer.style.display = 'none';
         errorDiv.style.display = 'block';
     }
+}
+
+// Función para mostrar productos en el grid
+function displayProducts(products) {
+    // Limpiar el contenedor
+    productsContainer.innerHTML = '';
+
+    // Crear y agregar las tarjetas de productos
+    if (products.length === 0) {
+        productsContainer.innerHTML = '<p style="color: white; text-align: center; grid-column: 1 / -1;">No se encontraron productos</p>';
+    } else {
+        products.forEach(product => {
+            const card = createProductCard(product);
+            productsContainer.appendChild(card);
+        });
+    }
+}
+
+// Función para filtrar productos según la búsqueda
+function filterProducts() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    // Si no hay término de búsqueda, mostrar todos los productos
+    if (searchTerm === '') {
+        displayProducts(allProducts);
+        return;
+    }
+    
+    // Filtrar productos que coincidan con el término de búsqueda
+    const filteredProducts = allProducts.filter(product => {
+        // Buscar en el nombre
+        const nameMatch = product.name.toLowerCase().includes(searchTerm);
+        // Buscar en la descripción
+        const descriptionMatch = product.description 
+            ? product.description.toLowerCase().includes(searchTerm)
+            : false;
+        
+        return nameMatch || descriptionMatch;
+    });
+    
+    // Mostrar los productos filtrados
+    displayProducts(filteredProducts);
 }
 
 // Función para abrir el carrito
@@ -326,3 +366,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
     updateCartUI(); // Cargar el carrito desde localStorage
 });
+
+// Evento para el campo de búsqueda
+searchInput.addEventListener('input', filterProducts);

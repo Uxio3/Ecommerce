@@ -335,3 +335,28 @@ header p {
 .cart-overlay.show {
     display: block;
 }
+
+/* Estilos del campo de búsqueda */
+.search-container {
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border: 2px solid #5a8f7b;
+    border-radius: 50px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #76b39d;
+    box-shadow: 0 0 10px rgba(90, 143, 123, 0.3);
+}
+
+.search-input::placeholder {
+    color: #999;
+}
