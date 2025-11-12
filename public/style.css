@@ -452,3 +452,122 @@ header p {
 .clear-filters-btn:active {
     transform: translateY(0);
 }
+
+/* Estilos de la página de detalles */
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #2b2d42;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #5a8f7b;
+}
+
+.product-details-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin-top: 30px;
+}
+
+.product-details-image {
+    width: 100%;
+}
+
+.product-details-img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.product-details-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.product-details-name {
+    font-size: 2.5rem;
+    color: #2b2d42;
+    margin: 0;
+}
+
+.product-details-price {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #6a4c93;
+}
+
+.product-details-stock {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.product-details-stock.in-stock {
+    color: #2a9d8f;
+}
+
+.product-details-stock.out-of-stock {
+    color: #e63946;
+}
+
+.product-details-description {
+    margin-top: 20px;
+}
+
+.product-details-description h3 {
+    font-size: 1.5rem;
+    color: #2b2d42;
+    margin-bottom: 10px;
+}
+
+.product-details-description p {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.product-details-add-to-cart {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #5a8f7b 0%, #76b39d 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+}
+
+.product-details-add-to-cart:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.product-details-add-to-cart:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive: en pantallas pequeñas, mostrar en una columna */
+@media (max-width: 768px) {
+    .product-details-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .product-details-img {
+        height: 300px;
+    }
+}

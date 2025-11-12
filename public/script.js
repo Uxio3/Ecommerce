@@ -38,6 +38,10 @@ function formatPrice(price) {
 function createProductCard(product) {
     const card = document.createElement('div');
     card.className = 'product-card';
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+        window.location.href = `product-details.html?id=${product.id}`;
+    });
 
     const inStock = product.stock > 0;
     const stockClass = inStock ? 'in-stock' : 'out-of-stock';
@@ -61,7 +65,10 @@ function createProductCard(product) {
     // Añadir evento al botón "Añadir al carrito"
     const addToCartBtn = card.querySelector('.add-to-cart');
     if (inStock) {
-        addToCartBtn.addEventListener('click', () => addToCart(product));
+        addToCartBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita que al hacer click en el botón active el click de la tarjeta
+            addToCart(product);
+        });
     }
 
     return card;

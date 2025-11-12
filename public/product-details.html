@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Producto - Tienda Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 Tienda Online</h1>
+            <a href="index.html" class="back-link">← Volver a productos</a>
+        </header>
+
+        <!-- Botón para abrir/cerrar el carrito -->
+        <button id="cart-toggle" class="cart-toggle">
+            🛒 Carrito (<span id="cart-count">0</span>)
+        </button>
+
+        <!-- Panel del carrito (oculto por defecto) -->
+        <div id="cart-panel" class="cart-panel">
+            <div class="cart-header">
+                <h2>Tu Carrito</h2>
+                <button id="close-cart" class="close-cart">✕</button>
+            </div>
+            <div id="cart-items" class="cart-items">
+                <!-- Los productos del carrito se mostrarán aquí -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <strong>Total: <span id="cart-total">0.00</span> €</strong>
+                </div>
+                <button id="checkout-btn" class="checkout-btn">Finalizar Compra</button>
+            </div>
+        </div>
+
+        <!-- Overlay para cerrar el carrito al hacer clic fuera -->
+        <div id="cart-overlay" class="cart-overlay"></div>
+
+        <main>
+            <div id="loading" class="loading">
+                Cargando producto...
+            </div>
+
+            <div id="product-details" class="product-details" style="display: none;">
+                <!-- Los detalles del producto se cargarán aquí con JavaScript -->
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                Error al cargar el producto. Por favor, intenta de nuevo.
+            </div>
+        </main>
+    </div>
+
+    <script src="product-details.js"></script>
+</body>
+</html>
