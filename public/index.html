@@ -13,14 +13,42 @@
             <p>Bienvenido a nuestra tienda</p>
         </header>
 
-        <!-- Campo de búsqueda -->
-        <div class="search-container">
-            <input 
-                type="text" 
-                id="search-input" 
-                class="search-input" 
-                placeholder="Buscar productos...">
-        </div>
+                <!-- Campo de búsqueda y filtros -->
+                <div class="search-filters-container">
+                    <div class="search-container">
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            class="search-input" 
+                            placeholder="Buscar productos..."
+                        >
+                    </div>
+                    
+                    <!-- Filtros -->
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label for="price-filter">Filtrar por precio:</label>
+                            <select id="price-filter" class="filter-select">
+                                <option value="">Todos los precios</option>
+                                <option value="0-50">Menos de 50€</option>
+                                <option value="50-100">50€ - 100€</option>
+                                <option value="100-200">100€ - 200€</option>
+                                <option value="200+">Más de 200€</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="stock-filter">Filtrar por stock:</label>
+                            <select id="stock-filter" class="filter-select">
+                                <option value="">Todos</option>
+                                <option value="in-stock">Solo con stock</option>
+                                <option value="out-of-stock">Sin stock</option>
+                            </select>
+                        </div>
+                        
+                        <button id="clear-filters" class="clear-filters-btn">Limpiar filtros</button>
+                    </div>
+                </div>
 
         <!-- Botón para abrir/cerrar el carrito -->
         <button id="cart-toggle" class="cart-toggle">

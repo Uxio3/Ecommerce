@@ -360,3 +360,95 @@ header p {
 .search-input::placeholder {
     color: #999;
 }
+
+/* Estilos de filtros mejorados */
+.search-filters-container {
+    max-width: 1200px;
+    margin: 0 auto 40px auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.filters-container {
+    display: flex;
+    gap: 25px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 180px;
+}
+
+.filter-group label {
+    font-size: 0.95rem;
+    color: #2b2d42;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.filter-select {
+    padding: 12px 18px;
+    font-size: 1rem;
+    border: 2px solid #5a8f7b;
+    border-radius: 10px;
+    outline: none;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #2b2d42;
+    font-weight: 500;
+}
+
+.filter-select:hover {
+    border-color: #76b39d;
+    background: #f0f9f7;
+}
+
+.filter-select {
+    padding: 12px 40px 12px 18px;
+    font-size: 1rem;
+    border: 2px solid #5a8f7b;
+    border-radius: 10px;
+    outline: none;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #2b2d42;
+    font-weight: 500;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a8f7b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+}
+
+.clear-filters-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+    min-width: 140px;
+}
+
+.clear-filters-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+}
+
+.clear-filters-btn:active {
+    transform: translateY(0);
+}
