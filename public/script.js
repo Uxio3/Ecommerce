@@ -259,10 +259,65 @@ cartOverlay.addEventListener('click', () => {
     closeCartPanel();
 });
 
-checkoutBtn.addEventListener('click', () => {
-    if (cart.length > 0) {
-        alert('¡Gracias por tu compra! (Esta funcionalidad se implementará más adelante)');
-        // Aquí podrías redirigir a una página de checkout o procesar el pedido
+// Evento del botón "Finalizar Compra"
+checkoutBtn.addEventListener('click', async () => {
+    // Verificar que el carrito no esté vacío
+    if (cart.length === 0) {
+        alert('❌ Tu carrito está vacío');
+        return;
+    }
+    
+    // Deshabilitar el botón mientras se procesa el pedido
+    checkoutBtn.disabled = true;
+    checkoutBtn.textContent = 'Procesando...';
+    
+    try {
+        // Transformar el carrito al formato que espera el backend
+        // El backend espera: { items: [{ productId: 1, quantity: 2 }, ...] }
+        const items = cart.map(item => ({
+            productId: item.id,
+            quantity: item.quantity
+        }));
+        
+        // Enviar la petición POST al backend
+        const response = await fetch('http://localhost:3000/api/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Indicar que enviamos JSON
+            },
+            body: JSON.stringify({ items }) // Convertir el objeto a JSON
+        });
+        
+        // Verificar si la respuesta fue exitosa
+        if (!response.ok) {
+            // Si hay error, obtener el mensaje del backend
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al crear el pedido');
+        }
+        
+        // Si todo salió bien, obtener los datos del pedido creado
+        const result = await response.json();
+        
+        // Mostrar mensaje de éxito
+        alert(`✅ Pedido creado correctamente!\n\nID del pedido: ${result.order.id}\nTotal: ${formatPrice(result.order.total)}`);
+        
+        // Vaciar el carrito
+        cart = [];
+        saveCart();
+        updateCartUI();
+        closeCartPanel();
+        
+        // Recargar los productos para actualizar el stock
+        loadProducts();
+        
+    } catch (error) {
+        // Si hay un error, mostrarlo al usuario
+        console.error('Error al crear el pedido:', error);
+        alert(`❌ Error: ${error.message}`);
+    } finally {
+        // Rehabilitar el botón siempre (incluso si hubo error)
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = 'Finalizar Compra';
     }
 });
 
