@@ -765,3 +765,156 @@ header p {
 .btn-secondary:active {
     transform: translateY(0);
 }
+
+/* Estilos para el historial de pedidos */
+.order-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.order-header h3 {
+    margin: 0;
+    color: #2b2d42;
+    font-size: 1.5rem;
+}
+
+.order-date {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.order-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.order-status {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.order-total {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #6a4c93;
+}
+
+.order-items h4 {
+    color: #2b2d42;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.order-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.order-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.order-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.order-item-info {
+    flex: 1;
+}
+
+.order-item-name {
+    font-weight: bold;
+    color: #2b2d42;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.order-item-details {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Responsive para historial de pedidos */
+@media (max-width: 768px) {
+    .order-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .order-info {
+        align-items: flex-start;
+    }
+    
+    .order-item {
+        flex-direction: column;
+    }
+    
+    .order-item-image {
+        width: 100%;
+        height: 200px;
+    }
+}
+
+/* Estilos para el filtro de ordenamiento en historial */
+.sort-container {
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+.sort-container label {
+    font-size: 1rem;
+    color: #2b2d42;
+    font-weight: 600;
+}
+
+.sort-container .filter-select {
+    min-width: 200px;
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Historial de Pedidos - Tienda Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Mi Historial de Pedidos</h1>
+            <p>Aquí puedes ver todos tus pedidos anteriores</p>
+        </header>
+
+        <!-- Sección de usuario (login/logout) -->
+        <div id="user-section" class="user-section">
+            <!-- Estado cuando el usuario NO está logueado -->
+            <div id="user-not-logged" class="user-not-logged" style="display: none;">
+                <p>Debes iniciar sesión para ver tu historial de pedidos.</p>
+                <a href="login.html" class="btn btn-primary btn-small">Iniciar Sesión</a>
+                <a href="register.html" class="btn btn-secondary btn-small">Registrarse</a>
+            </div>
+            
+            <!-- Estado cuando el usuario SÍ está logueado -->
+            <div id="user-logged" class="user-logged" style="display: none;">
+                <span class="user-name">👤 <span id="user-name-display"></span></span>
+                <button id="logout-btn" class="btn btn-secondary btn-small">Cerrar Sesión</button>
+            </div>
+        </div>
+            <!-- Enlace para volver a la tienda -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <a href="index.html" class="back-link">← Volver a la tienda</a>
+            </div>
+    
+            <!-- Filtro de ordenamiento -->
+            <div id="sort-container" class="sort-container" style="display: none;">
+                <label for="sort-select">Ordenar por fecha:</label>
+                <select id="sort-select" class="filter-select">
+                    <option value="newest">Más recientes primero</option>
+                    <option value="oldest">Más antiguos primero</option>
+                </select>
+            </div>
+        
+
+        <!-- Contenedor de pedidos -->
+        <div id="loading" class="loading">
+            Cargando tu historial de pedidos...
+        </div>
+
+        <div id="orders-container" style="display: none;">
+            <!-- Los pedidos se cargarán aquí con JavaScript -->
+        </div>
+
+        <div id="no-orders" class="error" style="display: none;">
+            <p>No tienes pedidos aún. <a href="index.html">¡Comienza a comprar!</a></p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            Error al cargar tu historial de pedidos. Por favor, intenta de nuevo.
+        </div>
+    </div>
+
+    <script src="orders-history.js"></script>
+</body>
+</html>
