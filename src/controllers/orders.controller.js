@@ -1,6 +1,5 @@
 // Controlador para manejar las peticiones HTTP relacionadas con pedidos
-const { createOrder, getUserOrders, getAllOrders } = require('../services/orders.service');
-
+const { createOrder, getUserOrders, getAllOrders, updateOrderStatus } = require('../services/orders.service');
 /**
  * Controlador para POST /api/orders
  * Crea un nuevo pedido con los items enviados desde el frontend
@@ -106,8 +105,57 @@ async function getAllOrdersController(req, res) {
     }
 }
 
+/**
+ * Controlador para PUT /api/orders/:id/status
+ * Actualiza el estado de un pedido
+ */
+async function updateOrderStatusController(req, res) {
+    try {
+        // Obtener el ID del pedido y el nuevo estado de los parámetros
+        const orderId = parseInt(req.params.id);
+        const { status } = req.body;
+        
+        // Validar que orderId sea un número válido
+        if (isNaN(orderId)) {
+            return res.status(400).json({
+                success: false,
+                error: 'ID de pedido inválido'
+            });
+        }
+        
+        // Validar que status esté presente
+        if (!status) {
+            return res.status(400).json({
+                success: false,
+                error: 'El estado es obligatorio'
+            });
+        }
+        
+        // Llamar al servicio para actualizar el estado
+        const order = await updateOrderStatus(orderId, status);
+        
+        // Responder con éxito y el pedido actualizado
+        res.json({
+            success: true,
+            message: 'Estado del pedido actualizado correctamente',
+            order: order
+        });
+        
+    } catch (error) {
+        // Si hay un error, registrarlo en la consola
+        console.error('Error al actualizar el estado del pedido:', error);
+        
+        // Responder con error
+        res.status(400).json({
+            success: false,
+            error: error.message || 'Error al actualizar el estado del pedido'
+        });
+    }
+}
+
 module.exports = {
     createOrderController,
     getUserOrdersController,
-    getAllOrdersController
+    getAllOrdersController,
+    updateOrderStatusController
 };

@@ -42,6 +42,7 @@ function formatDate(dateString) {
 function createOrderCard(order) {
     const orderCard = document.createElement('div');
     orderCard.className = 'order-card';
+    orderCard.setAttribute('data-order-id', order.id);
     
     const statusClass = order.status === 'pending' ? 'status-pending' : 
                        order.status === 'completed' ? 'status-completed' : 'status-cancelled';
@@ -65,7 +66,15 @@ function createOrderCard(order) {
                 ${userInfo}
             </div>
             <div class="order-info">
-                <span class="order-status ${statusClass}">${statusText}</span>
+                <div class="order-status-controls">
+                    <label for="status-select-${order.id}">Estado:</label>
+                    <select id="status-select-${order.id}" class="status-select" data-order-id="${order.id}">
+                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+                        <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completado</option>
+                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
+                    </select>
+                    <span class="order-status ${statusClass}">${statusText}</span>
+                </div>
                 <span class="order-total">Total: ${formatPrice(order.total)}</span>
             </div>
         </div>
@@ -90,7 +99,74 @@ function createOrderCard(order) {
         </div>
     `;
     
+    // Agregar event listener al selector de estado
+    const statusSelect = orderCard.querySelector(`#status-select-${order.id}`);
+    if (statusSelect) {
+        // Guardar el valor original
+        statusSelect.setAttribute('data-original-value', order.status);
+        
+        statusSelect.addEventListener('change', (e) => {
+            handleStatusChange(order.id, e.target.value);
+        });
+    }
+    
     return orderCard;
+}
+
+// Función para manejar el cambio de estado de un pedido
+async function handleStatusChange(orderId, newStatus) {
+    try {
+        // Deshabilitar el selector mientras se procesa
+        const statusSelect = document.getElementById(`status-select-${orderId}`);
+        const originalValue = statusSelect.getAttribute('data-original-value') || statusSelect.value;
+        statusSelect.disabled = true;
+        
+        // Hacer petición PUT al backend
+        const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al actualizar el estado');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Actualizar el pedido en allOrders
+            const orderIndex = allOrders.findIndex(o => o.id === orderId);
+            if (orderIndex !== -1) {
+                allOrders[orderIndex].status = newStatus;
+                allOrders[orderIndex].updated_at = data.order.updated_at;
+            }
+            
+            // Actualizar la vista
+            updateOrdersView();
+            
+            // Habilitar el selector
+            statusSelect.disabled = false;
+            statusSelect.setAttribute('data-original-value', newStatus);
+            
+            // Mostrar mensaje de éxito
+            alert(`✅ Estado del pedido #${orderId} actualizado a "${newStatus}"`);
+        }
+        
+    } catch (error) {
+        console.error('Error al actualizar el estado:', error);
+        alert(`❌ Error: ${error.message}`);
+        
+        // Restaurar el valor original y habilitar el selector
+        const statusSelect = document.getElementById(`status-select-${orderId}`);
+        if (statusSelect) {
+            statusSelect.value = statusSelect.getAttribute('data-original-value') || 'pending';
+            statusSelect.disabled = false;
+        }
+    }
 }
 
 // Función para ordenar los pedidos
@@ -202,6 +278,7 @@ async function loadAllOrders() {
         errorDiv.style.display = 'block';
     }
 }
+
 
 // Función para manejar el cambio de ordenamiento
 function handleSortChange() {

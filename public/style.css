@@ -977,3 +977,47 @@ header p {
     color: #2b2d42;
     font-size: 0.95rem;
 }
+
+/* Estilos para el selector de estado en el panel de administración */
+.order-status-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.order-status-controls label {
+    font-size: 0.9rem;
+    color: #2b2d42;
+    font-weight: 600;
+}
+
+.status-select {
+    padding: 8px 15px;
+    font-size: 0.95rem;
+    border: 2px solid #5a8f7b;
+    border-radius: 8px;
+    outline: none;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #2b2d42;
+    font-weight: 500;
+    min-width: 150px;
+}
+
+.status-select:hover {
+    border-color: #76b39d;
+    background: #f0f9f7;
+}
+
+.status-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f8f9fa;
+}
+
+.status-select:focus {
+    border-color: #76b39d;
+    box-shadow: 0 0 10px rgba(90, 143, 123, 0.3);
+}

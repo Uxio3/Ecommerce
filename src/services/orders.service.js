@@ -195,8 +195,48 @@ async function getAllOrders() {
     }
 }
 
+/**
+ * Actualiza el estado de un pedido
+ * @param {number} orderId - ID del pedido
+ * @param {string} status - Nuevo estado (pending, completed, cancelled)
+ * @returns {Object} - El pedido actualizado
+ */
+async function updateOrderStatus(orderId, status) {
+    try {
+        // Validar que el estado sea válido
+        const validStatuses = ['pending', 'completed', 'cancelled'];
+        if (!validStatuses.includes(status)) {
+            throw new Error(`Estado inválido. Debe ser uno de: ${validStatuses.join(', ')}`);
+        }
+        
+        // Actualizar el estado del pedido
+        const [result] = await pool.query(
+            'UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            [status, orderId]
+        );
+        
+        // Verificar que el pedido existe
+        if (result.affectedRows === 0) {
+            throw new Error(`Pedido con ID ${orderId} no encontrado`);
+        }
+        
+        // Obtener el pedido actualizado
+        const [orders] = await pool.query(
+            'SELECT * FROM orders WHERE id = ?',
+            [orderId]
+        );
+        
+        return orders[0];
+        
+    } catch (error) {
+        console.error('Error al actualizar el estado del pedido:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     createOrder,
     getUserOrders,
-    getAllOrders
+    getAllOrders,
+    updateOrderStatus
 };
