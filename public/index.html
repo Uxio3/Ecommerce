@@ -13,6 +13,21 @@
             <p>Bienvenido a nuestra tienda</p>
         </header>
 
+                <!-- Sección de usuario (login/logout) -->
+                <div id="user-section" class="user-section">
+                    <!-- Estado cuando el usuario NO está logueado -->
+                    <div id="user-not-logged" class="user-not-logged" style="display: none;">
+                        <a href="login.html" class="btn btn-primary btn-small">Iniciar Sesión</a>
+                        <a href="register.html" class="btn btn-secondary btn-small">Registrarse</a>
+                    </div>
+                    
+                    <!-- Estado cuando el usuario SÍ está logueado -->
+                    <div id="user-logged" class="user-logged" style="display: none;">
+                        <span class="user-name">👤 <span id="user-name-display"></span></span>
+                        <button id="logout-btn" class="btn btn-secondary btn-small">Cerrar Sesión</button>
+                    </div>
+                </div>
+
                 <!-- Campo de búsqueda y filtros -->
                 <div class="search-filters-container">
                     <div class="search-container">

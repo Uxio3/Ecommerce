@@ -719,3 +719,49 @@ header p {
         font-size: 2rem;
     }
 }
+
+/* Estilos para la sección de usuario */
+.user-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-not-logged,
+.user-logged {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.user-name {
+    font-size: 1.1rem;
+    color: #2b2d42;
+    font-weight: 600;
+}
+
+.btn-small {
+    padding: 8px 20px;
+    font-size: 0.95rem;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+    box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}

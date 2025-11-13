@@ -1,5 +1,5 @@
 // Controlador para manejar las peticiones HTTP relacionadas con pedidos
-const { createOrder } = require('../services/orders.service');
+const { createOrder, getUserOrders } = require('../services/orders.service');
 
 /**
  * Controlador para POST /api/orders
@@ -7,12 +7,20 @@ const { createOrder } = require('../services/orders.service');
  */
 async function createOrderController(req, res) {
     try {
-        // Obtener los items del body de la petición
-        // El frontend enviará: { items: [{ productId: 1, quantity: 2 }, ...] }
-        const { items } = req.body;
+        // Obtener los items y el userId del body de la petición
+        // El frontend enviará: { items: [...], userId: 1 } o { items: [...] } si no hay usuario
+        const { items, userId } = req.body;
         
-        // Llamar al servicio para crear el pedido
-        const order = await createOrder(items);
+        // Validar que items existe y es un array
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Los items del pedido son obligatorios y deben ser un array no vacío'
+            });
+        }
+        
+        // Llamar al servicio para crear el pedido (userId puede ser null)
+        const order = await createOrder(items, userId || null);
         
         // Responder con éxito (201 = Created) y el pedido creado
         res.status(201).json({
@@ -33,6 +41,45 @@ async function createOrderController(req, res) {
     }
 }
 
+/**
+ * Controlador para GET /api/orders/user/:userId
+ * Obtiene todos los pedidos de un usuario específico
+ */
+async function getUserOrdersController(req, res) {
+    try {
+        // Obtener el userId de los parámetros de la URL
+        const userId = parseInt(req.params.userId);
+        
+        // Validar que userId sea un número válido
+        if (isNaN(userId)) {
+            return res.status(400).json({
+                success: false,
+                error: 'ID de usuario inválido'
+            });
+        }
+        
+        // Llamar al servicio para obtener los pedidos
+        const orders = await getUserOrders(userId);
+        
+        // Responder con éxito y los pedidos
+        res.json({
+            success: true,
+            orders: orders
+        });
+        
+    } catch (error) {
+        // Si hay un error, registrarlo en la consola
+        console.error('Error al obtener pedidos del usuario:', error);
+        
+        // Responder con error (500 = Internal Server Error)
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener los pedidos del usuario'
+        });
+    }
+}
+
 module.exports = {
-    createOrderController
+    createOrderController,
+    getUserOrdersController
 };

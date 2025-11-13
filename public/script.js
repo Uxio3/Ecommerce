@@ -19,6 +19,54 @@ const searchInput = document.getElementById('search-input');
 const priceFilter = document.getElementById('price-filter');
 const stockFilter = document.getElementById('stock-filter');
 const clearFiltersBtn = document.getElementById('clear-filters');
+// Elementos del DOM para el usuario
+const userSection = document.getElementById('user-section');
+const userNotLogged = document.getElementById('user-not-logged');
+const userLogged = document.getElementById('user-logged');
+const userNameDisplay = document.getElementById('user-name-display');
+const logoutBtn = document.getElementById('logout-btn');
+
+// Función para obtener el usuario actual desde localStorage
+function getCurrentUser() {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+}
+
+// Función para actualizar la UI según el estado del usuario
+function updateUserUI() {
+    const user = getCurrentUser();
+    
+    if (user) {
+        // Usuario logueado: mostrar nombre y botón de logout
+        userNameDisplay.textContent = user.name;
+        userNotLogged.style.display = 'none';
+        userLogged.style.display = 'flex';
+    } else {
+        // Usuario no logueado: mostrar botones de login y registro
+        userNotLogged.style.display = 'flex';
+        userLogged.style.display = 'none';
+    }
+}
+
+// Función para cerrar sesión
+function handleLogout() {
+    // Eliminar el usuario de localStorage
+    localStorage.removeItem('user');
+    
+    // Actualizar la UI
+    updateUserUI();
+    
+    // Opcional: mostrar mensaje de confirmación
+    alert('Sesión cerrada correctamente');
+}
+
+// Event listener para el botón de logout
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+}
+
+// Actualizar la UI cuando se carga la página
+updateUserUI();
 
 // Carrito (se carga desde localStorage)
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -347,7 +395,6 @@ cartOverlay.addEventListener('click', () => {
     closeCartPanel();
 });
 
-// Evento del botón "Finalizar Compra"
 checkoutBtn.addEventListener('click', async () => {
     // Verificar que el carrito no esté vacío
     if (cart.length === 0) {
@@ -361,11 +408,21 @@ checkoutBtn.addEventListener('click', async () => {
     
     try {
         // Transformar el carrito al formato que espera el backend
-        // El backend espera: { items: [{ productId: 1, quantity: 2 }, ...] }
+        // El backend espera: { items: [{ productId: 1, quantity: 2 }, ...], userId: 1 }
         const items = cart.map(item => ({
             productId: item.id,
             quantity: item.quantity
         }));
+        
+        // Obtener el usuario actual (si está logueado)
+        const user = getCurrentUser();
+        const userId = user ? user.id : null;
+        
+        // Preparar el body de la petición
+        const requestBody = { items };
+        if (userId) {
+            requestBody.userId = userId;
+        }
         
         // Enviar la petición POST al backend
         const response = await fetch('http://localhost:3000/api/orders', {
@@ -373,7 +430,7 @@ checkoutBtn.addEventListener('click', async () => {
             headers: {
                 'Content-Type': 'application/json' // Indicar que enviamos JSON
             },
-            body: JSON.stringify({ items }) // Convertir el objeto a JSON
+            body: JSON.stringify(requestBody) // Convertir el objeto a JSON
         });
         
         // Verificar si la respuesta fue exitosa

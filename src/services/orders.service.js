@@ -4,9 +4,10 @@ const { pool } = require('../config/database');
 /**
  * Crea un nuevo pedido con sus items
  * @param {Array} items - Array de objetos con { productId, quantity }
+ * @param {number|null} userId - ID del usuario (opcional, puede ser null)
  * @returns {Object} - El pedido creado con su ID y total
  */
-async function createOrder(items) {
+async function createOrder(items, userId = null) {
     // Obtener una conexión del pool
     const connection = await pool.getConnection();
     
@@ -49,10 +50,10 @@ async function createOrder(items) {
             });
         }
         
-        // Paso 2: Insertar el pedido en la tabla orders
+        // Paso 2: Insertar el pedido en la tabla orders (ahora incluyendo user_id)
         const [orderResult] = await connection.query(
-            'INSERT INTO orders (total, status) VALUES (?, ?)',
-            [total, 'pending']
+            'INSERT INTO orders (total, status, user_id) VALUES (?, ?, ?)',
+            [total, 'pending', userId]
         );
         
         const orderId = orderResult.insertId; // ID del pedido recién creado
@@ -79,6 +80,7 @@ async function createOrder(items) {
             id: orderId,
             total: total,
             status: 'pending',
+            user_id: userId,
             items: orderItems
         };
         
@@ -92,6 +94,57 @@ async function createOrder(items) {
     }
 }
 
+/**
+ * Obtiene todos los pedidos de un usuario específico
+ * @param {number} userId - ID del usuario
+ * @returns {Array} - Array de pedidos con sus items
+ */
+async function getUserOrders(userId) {
+    try {
+        // Obtener todos los pedidos del usuario
+        const [orders] = await pool.query(
+            `SELECT 
+                id, 
+                total, 
+                status, 
+                created_at, 
+                updated_at 
+            FROM orders 
+            WHERE user_id = ? 
+            ORDER BY created_at DESC`,
+            [userId]
+        );
+        
+        // Para cada pedido, obtener sus items
+        for (const order of orders) {
+            const [items] = await pool.query(
+                `SELECT 
+                    oi.id,
+                    oi.quantity,
+                    oi.unit_price,
+                    p.id as product_id,
+                    p.name as product_name,
+                    p.img_url as product_image
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                WHERE oi.order_id = ?
+                ORDER BY oi.id`,
+                [order.id]
+            );
+            
+            // Agregar los items al pedido
+            order.items = items;
+        }
+        
+        return orders;
+        
+    } catch (error) {
+        console.error('Error al obtener pedidos del usuario:', error);
+        throw error;
+    }
+}
+
 module.exports = {
-    createOrder
+    createOrder,
+    getUserOrders
 };
