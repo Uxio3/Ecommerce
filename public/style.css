@@ -1021,3 +1021,15 @@ header p {
     border-color: #76b39d;
     box-shadow: 0 0 10px rgba(90, 143, 123, 0.3);
 }
+
+/* Estilo especial para el botón de administración */
+#admin-link {
+    background: linear-gradient(135deg, #6a4c93 0%, #8b6fb8 100%);
+    box-shadow: 0 3px 10px rgba(106, 76, 147, 0.3);
+}
+
+#admin-link:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(106, 76, 147, 0.4);
+}

@@ -35,16 +35,31 @@ function getCurrentUser() {
 // Función para actualizar la UI según el estado del usuario
 function updateUserUI() {
     const user = getCurrentUser();
+    const adminLink = document.getElementById('admin-link');
     
     if (user) {
-        // Usuario logueado: mostrar nombre y botón de logout
+        // Usuario logueado: mostrar nombre y botones
         userNameDisplay.textContent = user.name;
         userNotLogged.style.display = 'none';
         userLogged.style.display = 'flex';
+        
+        // Mostrar enlace de administración solo si el usuario es admin
+        if (adminLink) {
+            if (user.is_admin) {
+                adminLink.style.display = 'inline-block';
+            } else {
+                adminLink.style.display = 'none';
+            }
+        }
     } else {
         // Usuario no logueado: mostrar botones de login y registro
         userNotLogged.style.display = 'flex';
         userLogged.style.display = 'none';
+        
+        // Ocultar enlace de administración
+        if (adminLink) {
+            adminLink.style.display = 'none';
+        }
     }
 }
 
