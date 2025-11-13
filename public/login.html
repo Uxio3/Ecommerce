@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Tienda Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <h1>🔐 Iniciar Sesión</h1>
+            <p class="subtitle">Ingresa tus credenciales para continuar</p>
+            
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required
+                        placeholder="Ej: juan@example.com"
+                        autocomplete="email"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required
+                        placeholder="Ingresa tu contraseña"
+                        autocomplete="current-password"
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    Iniciar Sesión
+                </button>
+                
+                <div id="login-error" class="error-message" style="display: none;"></div>
+            </form>
+            
+            <p class="auth-link">
+                ¿No tienes cuenta? <a href="register.html">Regístrate aquí</a>
+            </p>
+            
+            <p class="auth-link">
+                <a href="index.html">← Volver a la tienda</a>
+            </p>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
+</body>
+</html>

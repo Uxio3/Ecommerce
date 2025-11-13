@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Tienda Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <h1>🛒 Crear Cuenta</h1>
+            <p class="subtitle">Regístrate para comenzar a comprar</p>
+            
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="name">Nombre completo</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        required 
+                        minlength="3"
+                        placeholder="Ej: Juan Pérez"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required
+                        placeholder="Ej: juan@example.com"
+                        autocomplete="off"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        minlength="6"
+                        placeholder="Mínimo 6 caracteres"
+                        autocomplete="new-password"
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    Registrarse
+                </button>
+                
+                <div id="register-error" class="error-message" style="display: none;"></div>
+                <div id="register-success" class="success-message" style="display: none;"></div>
+            </form>
+            
+            <p class="auth-link">
+                ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+            </p>
+            
+            <p class="auth-link">
+                <a href="index.html">← Volver a la tienda</a>
+            </p>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
+</body>
+</html>
