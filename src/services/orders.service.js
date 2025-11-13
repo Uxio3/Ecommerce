@@ -144,7 +144,59 @@ async function getUserOrders(userId) {
     }
 }
 
+/**
+ * Obtiene todos los pedidos (para administración)
+ * @returns {Array} - Array de todos los pedidos con sus items y usuarios
+ */
+async function getAllOrders() {
+    try {
+        // Obtener todos los pedidos con información del usuario
+        const [orders] = await pool.query(
+            `SELECT 
+                o.id, 
+                o.total, 
+                o.status, 
+                o.created_at, 
+                o.updated_at,
+                o.user_id,
+                u.name as user_name,
+                u.email as user_email
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.id
+            ORDER BY o.created_at DESC`
+        );
+        
+        // Para cada pedido, obtener sus items
+        for (const order of orders) {
+            const [items] = await pool.query(
+                `SELECT 
+                    oi.id,
+                    oi.quantity,
+                    oi.unit_price,
+                    p.id as product_id,
+                    p.name as product_name,
+                    p.img_url as product_image
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                WHERE oi.order_id = ?
+                ORDER BY oi.id`,
+                [order.id]
+            );
+            
+            // Agregar los items al pedido
+            order.items = items;
+        }
+        
+        return orders;
+        
+    } catch (error) {
+        console.error('Error al obtener todos los pedidos:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     createOrder,
-    getUserOrders
+    getUserOrders,
+    getAllOrders
 };

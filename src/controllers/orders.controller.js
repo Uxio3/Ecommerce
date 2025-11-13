@@ -1,5 +1,5 @@
 // Controlador para manejar las peticiones HTTP relacionadas con pedidos
-const { createOrder, getUserOrders } = require('../services/orders.service');
+const { createOrder, getUserOrders, getAllOrders } = require('../services/orders.service');
 
 /**
  * Controlador para POST /api/orders
@@ -79,7 +79,35 @@ async function getUserOrdersController(req, res) {
     }
 }
 
+/**
+ * Controlador para GET /api/orders/admin/all
+ * Obtiene todos los pedidos (solo para administración)
+ */
+async function getAllOrdersController(req, res) {
+    try {
+        // Llamar al servicio para obtener todos los pedidos
+        const orders = await getAllOrders();
+        
+        // Responder con éxito y los pedidos
+        res.json({
+            success: true,
+            orders: orders
+        });
+        
+    } catch (error) {
+        // Si hay un error, registrarlo en la consola
+        console.error('Error al obtener todos los pedidos:', error);
+        
+        // Responder con error (500 = Internal Server Error)
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener los pedidos'
+        });
+    }
+}
+
 module.exports = {
     createOrderController,
-    getUserOrdersController
+    getUserOrdersController,
+    getAllOrdersController
 };

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Tienda Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Panel de Administración</h1>
+            <p>Gestión de pedidos y productos</p>
+        </header>
+
+        <!-- Navegación del panel -->
+        <div class="admin-nav">
+            <a href="index.html" class="back-link">← Volver a la tienda</a>
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="orders">📦 Pedidos</button>
+                <button class="admin-tab" data-tab="products">🛍️ Productos</button>
+            </div>
+        </div>
+
+        <!-- Pestaña de Pedidos -->
+        <div id="orders-tab" class="admin-tab-content active">
+            <h2>Todos los Pedidos</h2>
+            
+                    <!-- Pestaña de Pedidos -->
+        <div id="orders-tab" class="admin-tab-content active">
+            <h2>Todos los Pedidos</h2>
+            
+            <!-- Campo de búsqueda -->
+            <div class="search-container" style="max-width: 100%; margin-bottom: 20px;">
+                <input 
+                    type="text" 
+                    id="search-orders-input" 
+                    class="search-input" 
+                    placeholder="Buscar por ID de pedido, nombre de usuario, email o producto..."
+                >
+            </div>
+
+            <!-- Filtro de ordenamiento -->
+            <div class="sort-container">
+                <label for="sort-select">Ordenar por fecha:</label>
+                <select id="sort-select" class="filter-select">
+                    <option value="newest">Más recientes primero</option>
+                    <option value="oldest">Más antiguos primero</option>
+                </select>
+            </div>
+
+            <!-- Contenedor de pedidos -->
+            <div id="loading" class="loading">
+                Cargando pedidos...
+            </div>
+
+            <div id="orders-container" style="display: none;">
+                <!-- Los pedidos se cargarán aquí con JavaScript -->
+            </div>
+
+            <div id="no-orders" class="error" style="display: none;">
+                <p>No hay pedidos aún.</p>
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                Error al cargar los pedidos. Por favor, intenta de nuevo.
+            </div>
+        </div>
+
+        <!-- Pestaña de Productos (por ahora vacía) -->
+        <div id="products-tab" class="admin-tab-content" style="display: none;">
+            <h2>Gestión de Productos</h2>
+            <p>Esta funcionalidad estará disponible próximamente.</p>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
