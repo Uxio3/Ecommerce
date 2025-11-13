@@ -29,6 +29,7 @@ async function registerController(req, res) {
                 id: user.id,
                 name: user.name,
                 email: user.email,
+                is_admin: user.is_admin || false,
                 created_at: user.created_at
             }
         });
@@ -92,7 +93,8 @@ async function loginController(req, res) {
             user: {
                 id: user.id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                is_admin: user.is_admin || false
             }
         });
         

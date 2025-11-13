@@ -18,6 +18,27 @@ const productsTab = document.getElementById('products-tab');
 // Variable para almacenar todos los pedidos (sin ordenar)
 let allOrders = [];
 
+// Función para verificar si el usuario es administrador
+function checkAdminAccess() {
+    const user = getCurrentUser();
+    
+    // Si no hay usuario logueado, redirigir a login
+    if (!user) {
+        alert('Debes iniciar sesión para acceder al panel de administración');
+        window.location.href = 'login.html';
+        return false;
+    }
+    
+    // Si el usuario no es admin, redirigir a la página principal
+    if (!user.is_admin) {
+        alert('No tienes permisos para acceder al panel de administración');
+        window.location.href = 'index.html';
+        return false;
+    }
+    
+    return true;
+}
+
 // Función para formatear el precio
 function formatPrice(price) {
     return new Intl.NumberFormat('es-ES', {
@@ -304,6 +325,12 @@ function switchTab(tabName) {
     }
 }
 
+// Función para obtener el usuario actual desde localStorage
+function getCurrentUser() {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+}
+
 // Event listeners
 if (sortSelect) {
     sortSelect.addEventListener('change', handleSortChange);
@@ -322,5 +349,8 @@ adminTabs.forEach(tab => {
 
 // Cargar pedidos cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
-    loadAllOrders();
+    // Verificar acceso de administrador antes de cargar
+    if (checkAdminAccess()) {
+        loadAllOrders();
+    }
 });

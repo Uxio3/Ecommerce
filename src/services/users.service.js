@@ -32,7 +32,7 @@ async function createUser(userData) {
     
     // Obtener el usuario creado (sin la contraseña)
     const [users] = await pool.query(
-        'SELECT id, name, email, created_at FROM users WHERE id = ?',
+        'SELECT id, name, email, is_admin, created_at FROM users WHERE id = ?',
         [result.insertId]
     );
     
@@ -46,7 +46,7 @@ async function createUser(userData) {
  */
 async function getUserByEmail(email) {
     const [rows] = await pool.query(
-        'SELECT * FROM users WHERE email = ?',
+        'SELECT id, name, email, password_hash, is_admin FROM users WHERE email = ?',
         [email]
     );
     
