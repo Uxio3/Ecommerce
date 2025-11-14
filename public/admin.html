@@ -66,10 +66,22 @@
         <!-- Pestaña de Productos -->
         <div id="products-tab" class="admin-tab-content">
             <h2>Gestión de Productos</h2>
-            
+
             <!-- Botón para agregar nuevo producto -->
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                 <button id="add-product-btn" class="btn btn-primary">➕ Agregar Producto</button>
+                
+                <!-- Filtro para mostrar productos eliminados -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="show-deleted-filter" style="font-weight: 600; color: #2b2d42;">
+                        Mostrar eliminados:
+                    </label>
+                    <select id="show-deleted-filter" class="filter-select" style="min-width: 150px;">
+                        <option value="active">Solo activos</option>
+                        <option value="deleted">Solo eliminados</option>
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
             </div>
             
             <!-- Campo de búsqueda de productos -->

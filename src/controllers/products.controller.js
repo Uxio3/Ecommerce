@@ -5,6 +5,8 @@ const {
     createProduct,
     updateProduct,
     deleteProduct,
+    getAllProductsIncludingDeleted,
+    restoreProduct,
 } = require('../services/products.service');
 
 // Obtiene los productos y responde con JSON o error
@@ -89,10 +91,42 @@ async function deleteProductController(req, res) {
     }
 }
 
+// Obtiene todos los productos incluyendo eliminados (solo para admin)
+async function getAllProductsIncludingDeletedController(req, res) {
+    try {
+        const { getAllProductsIncludingDeleted } = require('../services/products.service');
+        const products = await getAllProductsIncludingDeleted();
+        res.json(products);
+    } catch (error) {
+        console.error('Error al obtener productos:', error);
+        res.status(500).json({ error: 'Error al obtener productos' });
+    }
+}
+
+// Reactiva un producto eliminado
+async function restoreProductController(req, res) {
+    try {
+        const { restoreProduct } = require('../services/products.service');
+        const id = parseInt(req.params.id);
+        const restored = await restoreProduct(id);
+        
+        if (restored) {
+            res.status(200).json({ success: true, message: 'Producto reactivado correctamente' });
+        } else {
+            res.status(404).json({ error: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al reactivar el producto:', error);
+        res.status(500).json({ error: 'Error al reactivar el producto' });
+    }
+}
+
 module.exports = {
     getProducts,
     getProduct,
     createProductController,
     updateProductController,
     deleteProductController,
+    getAllProductsIncludingDeletedController,
+    restoreProductController
 };

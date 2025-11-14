@@ -54,6 +54,20 @@ async function getUserByEmail(email) {
 }
 
 /**
+ * Busca un usuario por su ID
+ * @param {number} id - ID del usuario
+ * @returns {Object|null} - El usuario si existe, null si no
+ */
+async function getUserById(id) {
+    const [rows] = await pool.query(
+        'SELECT id, name, email, is_admin FROM users WHERE id = ?',
+        [id]
+    );
+    
+    return rows.length > 0 ? rows[0] : null;
+}
+
+/**
  * Verifica si la contraseña es correcta
  * @param {string} password - Contraseña en texto plano
  * @param {string} passwordHash - Hash de la contraseña almacenado
@@ -66,5 +80,6 @@ async function verifyPassword(password, passwordHash) {
 module.exports = {
     createUser,
     getUserByEmail,
+    getUserById,
     verifyPassword
 };

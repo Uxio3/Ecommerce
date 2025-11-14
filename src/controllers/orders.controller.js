@@ -46,31 +46,27 @@ async function createOrderController(req, res) {
  */
 async function getUserOrdersController(req, res) {
     try {
-        // Obtener el userId de los parámetros de la URL
         const userId = parseInt(req.params.userId);
         
-        // Validar que userId sea un número válido
-        if (isNaN(userId)) {
+        // Verificar que el usuario está intentando ver sus propios pedidos
+        if (req.user.id !== userId) {
+            return res.status(403).json({
+                success: false,
+                error: 'No tienes permiso para ver estos pedidos'
+            });
+        }
+        
+        if (isNaN(userId) || userId <= 0) {
             return res.status(400).json({
                 success: false,
                 error: 'ID de usuario inválido'
             });
         }
         
-        // Llamar al servicio para obtener los pedidos
         const orders = await getUserOrders(userId);
-        
-        // Responder con éxito y los pedidos
-        res.json({
-            success: true,
-            orders: orders
-        });
-        
+        res.json({ success: true, orders: orders });
     } catch (error) {
-        // Si hay un error, registrarlo en la consola
         console.error('Error al obtener pedidos del usuario:', error);
-        
-        // Responder con error (500 = Internal Server Error)
         res.status(500).json({
             success: false,
             error: 'Error al obtener los pedidos del usuario'

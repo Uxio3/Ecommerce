@@ -21,9 +21,24 @@ const productsContainer = document.getElementById('products-container');
 const productsLoading = document.getElementById('products-loading');
 const noProducts = document.getElementById('no-products');
 const productsError = document.getElementById('products-error');
+const showDeletedFilter = document.getElementById('show-deleted-filter');
 
 // Variable para almacenar todos los productos
 let allProducts = [];
+
+// Función helper para obtener el header de autenticación
+function getAuthHeaders() {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (user && user.id) {
+        headers['x-user-id'] = user.id.toString();
+    }
+    
+    return headers;
+}
 
 // Función para verificar si el usuario es administrador
 function checkAdminAccess() {
@@ -152,9 +167,7 @@ async function handleStatusChange(orderId, newStatus) {
         // Hacer petición PUT al backend
         const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify({ status: newStatus })
         });
         
@@ -279,7 +292,9 @@ function updateOrdersView() {
 // Función para cargar todos los pedidos
 async function loadAllOrders() {
     try {
-        const response = await fetch(`${API_URL}/orders/admin/all`);
+        const response = await fetch(`${API_URL}/orders/admin/all`, {
+            headers: getAuthHeaders()
+        });
         
         if (!response.ok) {
             throw new Error('Error al cargar los pedidos');
@@ -361,7 +376,6 @@ function getCurrentUser() {
     return userStr ? JSON.parse(userStr) : null;
 }
 
-// Función para cargar todos los productos
 async function loadAllProducts() {
     // Verificar que los elementos del DOM existen
     if (!productsLoading || !productsContainer || !productsError || !noProducts) {
@@ -370,38 +384,33 @@ async function loadAllProducts() {
     }
     
     try {
+        // Mostrar loading
         productsLoading.style.display = 'block';
         productsError.style.display = 'none';
         noProducts.style.display = 'none';
-        // No ocultar el contenedor aquí, solo limpiarlo
         productsContainer.innerHTML = '';
         
-        console.log('Cargando productos desde:', `${API_URL}/products`);
-        
-        const response = await fetch(`${API_URL}/products`);
-        
-        console.log('Respuesta recibida:', response.status);
+        // Cargar todos los productos (incluyendo eliminados) desde la ruta de admin
+        const response = await fetch(`${API_URL}/products/admin/all`, {
+            headers: getAuthHeaders()
+        });
         
         if (!response.ok) {
-            throw new Error(`Error al cargar los productos: ${response.status}`);
+            throw new Error(`Error HTTP: ${response.status}`);
         }
         
-        const data = await response.json();
+        const products = await response.json();
         
-        console.log('Productos recibidos:', data);
-        
+        // Ocultar loading
         productsLoading.style.display = 'none';
         
-        if (data && Array.isArray(data) && data.length > 0) {
-            allProducts = data;
-            console.log('Llamando a displayProducts con', data.length, 'productos');
+        if (products && Array.isArray(products) && products.length > 0) {
+            // Guardar todos los productos
+            allProducts = products;
             
-            // Usar un pequeño delay para asegurar que la pestaña esté visible
-            setTimeout(() => {
-                displayProducts(data);
-            }, 50);
+            // Aplicar filtros y mostrar
+            updateProductsView();
         } else {
-            console.log('No hay productos o el array está vacío');
             noProducts.style.display = 'block';
         }
         
@@ -419,9 +428,17 @@ function createAdminProductCard(product) {
     card.className = 'product-card';
     card.setAttribute('data-product-id', product.id);
     
+    // Si el producto está eliminado, agregar clase especial
+    if (product.deleted === 1 || product.deleted === true) {
+        card.classList.add('product-deleted');
+    }
+    
     const inStock = product.stock > 0;
     const stockClass = inStock ? 'in-stock' : 'out-of-stock';
     const stockText = inStock ? `En stock: ${product.stock} unidades` : 'Sin stock';
+    
+    // Determinar qué botones mostrar
+    const isDeleted = product.deleted === 1 || product.deleted === true;
     
     card.innerHTML = `
         <img src="${product.img_url || PLACEHOLDER_IMAGE}" 
@@ -432,15 +449,20 @@ function createAdminProductCard(product) {
         <div class="product-description">${product.description || 'Sin descripción'}</div>
         <div class="product-price">${formatPrice(product.price)}</div>
         <div class="product-stock ${stockClass}">${stockText}</div>
+        ${isDeleted ? '<div class="product-deleted-badge">🗑️ Eliminado</div>' : ''}
         <div class="admin-product-actions">
-            <button class="btn btn-primary btn-small edit-product-btn" data-product-id="${product.id}">✏️ Editar</button>
-            <button class="btn btn-secondary btn-small delete-product-btn" data-product-id="${product.id}">🗑️ Eliminar</button>
+            ${isDeleted 
+                ? `<button class="btn btn-primary btn-small restore-product-btn" data-product-id="${product.id}">♻️ Reactivar</button>`
+                : `<button class="btn btn-primary btn-small edit-product-btn" data-product-id="${product.id}">✏️ Editar</button>
+                   <button class="btn btn-secondary btn-small delete-product-btn" data-product-id="${product.id}">🗑️ Eliminar</button>`
+            }
         </div>
     `;
     
     // Agregar event listeners
     const editBtn = card.querySelector('.edit-product-btn');
     const deleteBtn = card.querySelector('.delete-product-btn');
+    const restoreBtn = card.querySelector('.restore-product-btn');
     
     if (editBtn) {
         editBtn.addEventListener('click', () => handleEditProduct(product.id));
@@ -448,6 +470,10 @@ function createAdminProductCard(product) {
     
     if (deleteBtn) {
         deleteBtn.addEventListener('click', () => handleDeleteProduct(product.id));
+    }
+    
+    if (restoreBtn) {
+        restoreBtn.addEventListener('click', () => handleRestoreProduct(product.id));
     }
     
     return card;
@@ -494,10 +520,38 @@ function filterProducts(products, searchTerm) {
     });
 }
 
-// Función para actualizar la vista de productos
+// Función para actualizar la vista de productos (aplicar filtros)
 function updateProductsView() {
-    const searchTerm = searchProductsInput ? searchProductsInput.value : '';
-    const filteredProducts = filterProducts(allProducts, searchTerm);
+    if (!allProducts || allProducts.length === 0) {
+        return;
+    }
+    
+    let filteredProducts = [...allProducts];
+    
+    // Aplicar filtro de búsqueda
+    const searchTerm = searchProductsInput ? searchProductsInput.value.toLowerCase().trim() : '';
+    if (searchTerm !== '') {
+        filteredProducts = filteredProducts.filter(product => {
+            const nameMatch = product.name.toLowerCase().includes(searchTerm);
+            const descriptionMatch = product.description 
+                ? product.description.toLowerCase().includes(searchTerm)
+                : false;
+            return nameMatch || descriptionMatch;
+        });
+    }
+    
+    // Aplicar filtro de productos eliminados
+    if (showDeletedFilter) {
+        const filterValue = showDeletedFilter.value;
+        if (filterValue === 'active') {
+            filteredProducts = filteredProducts.filter(p => !p.deleted || p.deleted === 0);
+        } else if (filterValue === 'deleted') {
+            filteredProducts = filteredProducts.filter(p => p.deleted === 1 || p.deleted === true);
+        }
+        // Si es 'all', no filtramos
+    }
+    
+    // Mostrar productos filtrados
     displayProducts(filteredProducts);
 }
 
@@ -505,7 +559,9 @@ function updateProductsView() {
 async function handleEditProduct(productId) {
     try {
         // Cargar los datos del producto
-        const response = await fetch(`${API_URL}/products/${productId}`);
+        const response = await fetch(`${API_URL}/products/${productId}`, {
+            headers: getAuthHeaders()
+        });
         
         if (!response.ok) {
             throw new Error('Error al cargar el producto');
@@ -535,6 +591,34 @@ async function handleEditProduct(productId) {
     }
 }
 
+// Función para reactivar un producto eliminado
+async function handleRestoreProduct(productId) {
+    if (!confirm(`¿Estás seguro de que quieres reactivar este producto?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${productId}/restore`, {
+            method: 'PUT',
+            headers: getAuthHeaders()
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al reactivar el producto');
+        }
+        
+        // Recargar los productos
+        await loadAllProducts();
+        
+        alert('✅ Producto reactivado correctamente');
+        
+    } catch (error) {
+        console.error('Error al reactivar producto:', error);
+        alert(`❌ Error: ${error.message}`);
+    }
+}
+
 // Función para manejar la eliminación de producto
 async function handleDeleteProduct(productId) {
     if (!confirm(`¿Estás seguro de que quieres eliminar este producto?`)) {
@@ -543,7 +627,8 @@ async function handleDeleteProduct(productId) {
     
     try {
         const response = await fetch(`${API_URL}/products/${productId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: getAuthHeaders()
         });
         
         if (!response.ok) {
@@ -551,11 +636,8 @@ async function handleDeleteProduct(productId) {
             throw new Error(errorData.error || 'Error al eliminar el producto');
         }
         
-        // Eliminar el producto del array
-        allProducts = allProducts.filter(p => p.id !== productId);
-        
-        // Actualizar la vista
-        updateProductsView();
+        // Recargar los productos
+        await loadAllProducts();
         
         alert('✅ Producto eliminado correctamente');
         
@@ -629,9 +711,7 @@ async function handleProductFormSubmit(e) {
         
         const response = await fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(productData)
         });
         
@@ -747,3 +827,8 @@ document.addEventListener('keydown', (e) => {
         closeModal();
     }
 });
+
+// Event listener para el filtro de productos eliminados
+if (showDeletedFilter) {
+    showDeletedFilter.addEventListener('change', updateProductsView);
+}

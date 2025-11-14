@@ -47,10 +47,27 @@ async function deleteProduct(id) {
     return result.affectedRows > 0; // Devuelve un booleano
 }
 
+// Obtiene todos los productos (incluyendo eliminados) - para admin
+async function getAllProductsIncludingDeleted() {
+    const [rows] = await pool.query('SELECT * FROM products ORDER BY deleted ASC, id DESC');
+    return rows;
+}
+
+// Reactiva un producto eliminado
+async function restoreProduct(id) {
+    const [result] = await pool.query(
+        'UPDATE products SET deleted = FALSE, deleted_at = NULL WHERE id = ?',
+        [id]
+    );
+    return result.affectedRows > 0;
+}
+
 module.exports = {
     getAllProducts,
     getProductById,
     createProduct,
     updateProduct,
     deleteProduct,
+    getAllProductsIncludingDeleted,
+    restoreProduct,
 };

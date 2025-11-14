@@ -7,25 +7,24 @@ const {
     createProductController,
     updateProductController,
     deleteProductController,
+    getAllProductsIncludingDeletedController,
+    restoreProductController,
 } = require('../controllers/products.controller');
 
 const { productValidationRules, validate } = require('../middlewares/validation.middleware');
+const { requireAuth, requireAdmin } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
-// Asocia la ruta GET / a la función getProducts del controlador
+// Rutas públicas (no requieren autenticación)
 router.get('/', getProducts);
-
-// GET /api/products/:id → obtiene un producto específico por ID
 router.get('/:id', getProduct);
 
-// POST /api/products → crea un nuevo producto
-router.post('/', productValidationRules, validate, createProductController);
-
-// PUT /api/products/:id → actualiza un producto existente
-router.put('/:id', productValidationRules, validate, updateProductController);
-
-// DELETE /api/products/:id → elimina un producto
-router.delete('/:id', deleteProductController);
+// Rutas que requieren autenticación y ser admin
+router.post('/', requireAuth, requireAdmin, productValidationRules, validate, createProductController);
+router.put('/:id', requireAuth, requireAdmin, productValidationRules, validate, updateProductController);
+router.delete('/:id', requireAuth, requireAdmin, deleteProductController);
+router.get('/admin/all', requireAuth, requireAdmin, getAllProductsIncludingDeletedController);
+router.put('/:id/restore', requireAuth, requireAdmin, restoreProductController);
 
 module.exports = router;
