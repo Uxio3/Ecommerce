@@ -264,32 +264,29 @@ function removeFromCart(productId) {
     updateCartUI();
 }
 
-// Función para cargar los productos desde la API
 async function loadProducts() {
     try {
         // Mostrar loading
         loading.style.display = 'block';
-        productsContainer.style.display = 'none';
+        productsContainer.style.display = 'none'; // Ocultar mientras carga
         errorDiv.style.display = 'none';
 
         // Hacer petición a la Api
-        const response = await fetch(API_URL);
-
+        const response = await fetch('http://localhost:3000/api/products');
+        
         if (!response.ok) {
-            throw new Error('Error al cargar los productos');
+            throw new Error(`Error HTTP: ${response.status}`);
         }
-
+        
         const products = await response.json();
-
-        // Guardar todos los productos (sin filtrar)
         allProducts = products;
 
-        // Ocultar loading
+        // Ocultar loading y mostrar contenedor
         loading.style.display = 'none';
-        productsContainer.style.display = 'grid';
+        productsContainer.style.display = 'grid'; // ✅ Mostrar el contenedor
 
         // Mostrar productos (con filtros aplicados)
-        displayProducts(products); // ✅ Solo esta línea, elimina el código duplicado de abajo
+        displayProducts(products);
 
     } catch (error) {
         console.error('Error:', error);
@@ -301,20 +298,23 @@ async function loadProducts() {
     }
 }
 
-// Función para mostrar productos en el grid
+// Función para mostrar productos
 function displayProducts(products) {
-    // Limpiar el contenedor
-    productsContainer.innerHTML = '';
-
-    // Crear y agregar las tarjetas de productos
-    if (products.length === 0) {
-        productsContainer.innerHTML = '<p style="color: white; text-align: center; grid-column: 1 / -1;">No se encontraron productos</p>';
-    } else {
-        products.forEach(product => {
-            const card = createProductCard(product);
-            productsContainer.appendChild(card);
-        });
+    if (!productsContainer) {
+        console.error('Error: productsContainer no encontrado');
+        return;
     }
+    
+    productsContainer.innerHTML = '';
+    
+    if (!products || products.length === 0) {
+        return;
+    }
+    
+    products.forEach(product => {
+        const card = createProductCard(product); // ✅ Cambiar de createAdminProductCard a createProductCard
+        productsContainer.appendChild(card);
+    });
 }
 
 // Función para filtrar productos según la búsqueda y filtros

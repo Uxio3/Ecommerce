@@ -80,7 +80,12 @@ async function deleteProductController(req, res) {
         }
     } catch (error) {
         console.error('Error al eliminar el producto:', error);
-        res.status(500).json({ error: 'Error al eliminar el producto' });
+        // Si es un error de foreign key, dar un mensaje más específico
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            res.status(409).json({ error: 'No se puede eliminar el producto porque tiene pedidos asociados' });
+        } else {
+            res.status(500).json({ error: 'Error al eliminar el producto' });
+        }
     }
 }
 

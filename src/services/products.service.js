@@ -1,8 +1,9 @@
 // Este fichero ejecuta consultas a la bd relacionadas con productos
 const { pool } = require('../config/database');
-// Devuelve un array de objetos con todas las columnas de la tabla
+
+// Devuelve un array de objetos con todas las columnas de la tabla (solo activos)
 async function getAllProducts() {
-    const [rows] = await pool.query('SELECT * FROM products');
+    const [rows] = await pool.query('SELECT * FROM products WHERE deleted = FALSE OR deleted IS NULL');
     return rows;
 }
 
@@ -37,10 +38,11 @@ async function updateProduct(id, productData) {
     return null;
 }
 
-// Elimina un producto por su ID
-async function  deleteProduct(id) {
+// Elimina un producto por su ID (soft delete)
+async function deleteProduct(id) {
     const [result] = await pool.query(
-        'DELETE FROM products WHERE id = ?', [id]
+        'UPDATE products SET deleted = TRUE, deleted_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [id]
     );
     return result.affectedRows > 0; // Devuelve un booleano
 }

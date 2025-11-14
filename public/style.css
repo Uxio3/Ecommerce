@@ -14,6 +14,8 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
+    padding: 0 20px;
 }
 
 header {
@@ -54,6 +56,14 @@ header p {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 30px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.products-grid .product-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0; /* Permite que el grid controle el tamaño */
 }
 
 .product-card {
@@ -1032,4 +1042,195 @@ header p {
     opacity: 0.9;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(106, 76, 147, 0.4);
+}
+
+/* Estilos para acciones de productos en el panel de administración */
+.admin-product-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.admin-product-actions .btn {
+    flex: 1;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+/* Estilos específicos para productos en admin */
+.admin-products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 30px !important;
+    width: 100% !important;
+}
+
+/* Cuando el contenedor tiene ambas clases, usar grid */
+.products-grid.admin-products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 30px !important;
+}
+
+/* Solo aplicar grid cuando está en admin - selector más específico */
+#products-container.admin-products-grid,
+#products-container.products-grid.admin-products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 30px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Tarjetas en admin - limitar ancho máximo pero permitir que el grid controle */
+#products-container.admin-products-grid .product-card,
+#products-container.products-grid.admin-products-grid .product-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Controlar visibilidad de pestañas con CSS */
+.admin-tab-content {
+    display: none !important;
+    width: 100% !important;
+}
+
+.admin-tab-content.active {
+    display: block !important;
+}
+
+/* Asegurar que el contenedor de productos en admin tenga el ancho completo */
+#products-tab #products-container {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Estilos para el modal de productos */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #2b2d42;
+    font-size: 1.8rem;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    background: #f0f0f0;
+    color: #dc3545;
+}
+
+.modal-form {
+    padding: 25px;
+}
+
+.modal-form .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2b2d42;
+    font-size: 1rem;
+}
+
+.modal-form .form-group input,
+.modal-form .form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1rem;
+    border: 2px solid #5a8f7b;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.modal-form .form-group input:focus,
+.modal-form .form-group textarea:focus {
+    border-color: #76b39d;
+    box-shadow: 0 0 10px rgba(90, 143, 123, 0.3);
+}
+
+.modal-form .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.modal-actions .btn {
+    min-width: 120px;
+}
+
+/* Responsive para el modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
+    }
 }

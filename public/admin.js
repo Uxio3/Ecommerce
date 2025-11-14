@@ -13,10 +13,17 @@ const sortSelect = document.getElementById('sort-select');
 const searchOrdersInput = document.getElementById('search-orders-input');
 const adminTabs = document.querySelectorAll('.admin-tab');
 const ordersTab = document.getElementById('orders-tab');
+// Elementos del DOM para productos
 const productsTab = document.getElementById('products-tab');
+const addProductBtn = document.getElementById('add-product-btn');
+const searchProductsInput = document.getElementById('search-products-input');
+const productsContainer = document.getElementById('products-container');
+const productsLoading = document.getElementById('products-loading');
+const noProducts = document.getElementById('no-products');
+const productsError = document.getElementById('products-error');
 
-// Variable para almacenar todos los pedidos (sin ordenar)
-let allOrders = [];
+// Variable para almacenar todos los productos
+let allProducts = [];
 
 // Función para verificar si el usuario es administrador
 function checkAdminAccess() {
@@ -308,27 +315,366 @@ function handleSortChange() {
 
 // Función para cambiar de pestaña
 function switchTab(tabName) {
-    // Ocultar todas las pestañas
-    ordersTab.style.display = 'none';
-    productsTab.style.display = 'none';
+    console.log('Cambiando a pestaña:', tabName);
+    
+    // Ocultar todas las pestañas usando clases
+    if (ordersTab) {
+        ordersTab.classList.remove('active');
+    }
+    
+    if (productsTab) {
+        productsTab.classList.remove('active');
+    }
     
     // Remover clase active de todos los botones
     adminTabs.forEach(tab => tab.classList.remove('active'));
     
     // Mostrar la pestaña seleccionada
     if (tabName === 'orders') {
-        ordersTab.style.display = 'block';
-        document.querySelector('[data-tab="orders"]').classList.add('active');
+        if (ordersTab) {
+            ordersTab.classList.add('active');
+        }
+        document.querySelector('[data-tab="orders"]')?.classList.add('active');
+        // Cargar pedidos cuando se cambia a esta pestaña
+        loadAllOrders();
     } else if (tabName === 'products') {
-        productsTab.style.display = 'block';
-        document.querySelector('[data-tab="products"]').classList.add('active');
+        if (productsTab) {
+            productsTab.classList.add('active');
+        }
+        document.querySelector('[data-tab="products"]')?.classList.add('active');
+        
+        // Esperar a que la pestaña esté visible antes de cargar productos
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                loadAllProducts();
+            });
+        });
     }
+    
+    console.log('ordersTab tiene active:', ordersTab?.classList.contains('active'));
+    console.log('productsTab tiene active:', productsTab?.classList.contains('active'));
 }
 
 // Función para obtener el usuario actual desde localStorage
 function getCurrentUser() {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
+}
+
+// Función para cargar todos los productos
+async function loadAllProducts() {
+    // Verificar que los elementos del DOM existen
+    if (!productsLoading || !productsContainer || !productsError || !noProducts) {
+        console.error('Error: Elementos del DOM de productos no encontrados');
+        return;
+    }
+    
+    try {
+        productsLoading.style.display = 'block';
+        productsError.style.display = 'none';
+        noProducts.style.display = 'none';
+        // No ocultar el contenedor aquí, solo limpiarlo
+        productsContainer.innerHTML = '';
+        
+        console.log('Cargando productos desde:', `${API_URL}/products`);
+        
+        const response = await fetch(`${API_URL}/products`);
+        
+        console.log('Respuesta recibida:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`Error al cargar los productos: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        console.log('Productos recibidos:', data);
+        
+        productsLoading.style.display = 'none';
+        
+        if (data && Array.isArray(data) && data.length > 0) {
+            allProducts = data;
+            console.log('Llamando a displayProducts con', data.length, 'productos');
+            
+            // Usar un pequeño delay para asegurar que la pestaña esté visible
+            setTimeout(() => {
+                displayProducts(data);
+            }, 50);
+        } else {
+            console.log('No hay productos o el array está vacío');
+            noProducts.style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Error al cargar productos:', error);
+        productsLoading.style.display = 'none';
+        productsError.style.display = 'block';
+        productsError.textContent = `Error: ${error.message}`;
+    }
+}
+
+// Función para crear una tarjeta de producto (versión admin)
+function createAdminProductCard(product) {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.setAttribute('data-product-id', product.id);
+    
+    const inStock = product.stock > 0;
+    const stockClass = inStock ? 'in-stock' : 'out-of-stock';
+    const stockText = inStock ? `En stock: ${product.stock} unidades` : 'Sin stock';
+    
+    card.innerHTML = `
+        <img src="${product.img_url || PLACEHOLDER_IMAGE}" 
+             alt="${product.name}" 
+             class="product-image"
+             onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}'">
+        <div class="product-name">${product.name}</div>
+        <div class="product-description">${product.description || 'Sin descripción'}</div>
+        <div class="product-price">${formatPrice(product.price)}</div>
+        <div class="product-stock ${stockClass}">${stockText}</div>
+        <div class="admin-product-actions">
+            <button class="btn btn-primary btn-small edit-product-btn" data-product-id="${product.id}">✏️ Editar</button>
+            <button class="btn btn-secondary btn-small delete-product-btn" data-product-id="${product.id}">🗑️ Eliminar</button>
+        </div>
+    `;
+    
+    // Agregar event listeners
+    const editBtn = card.querySelector('.edit-product-btn');
+    const deleteBtn = card.querySelector('.delete-product-btn');
+    
+    if (editBtn) {
+        editBtn.addEventListener('click', () => handleEditProduct(product.id));
+    }
+    
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => handleDeleteProduct(product.id));
+    }
+    
+    return card;
+}
+
+// Función para mostrar productos
+function displayProducts(products) {
+    console.log('displayProducts llamada con:', products);
+    
+    if (!productsContainer) {
+        console.error('Error: productsContainer no encontrado');
+        return;
+    }
+    
+    productsContainer.innerHTML = '';
+    
+    if (!products || products.length === 0) {
+        console.log('No hay productos para mostrar');
+        return;
+    }
+    
+    console.log('Creando tarjetas para', products.length, 'productos');
+    
+    // Crear y agregar tarjetas
+    products.forEach((product) => {
+        const card = createAdminProductCard(product);
+        productsContainer.appendChild(card);
+    });
+    
+    console.log('Productos mostrados correctamente');
+}
+
+// Función para filtrar productos
+function filterProducts(products, searchTerm) {
+    if (!searchTerm || searchTerm.trim() === '') {
+        return products;
+    }
+    
+    const term = searchTerm.toLowerCase().trim();
+    
+    return products.filter(product => {
+        return (product.name && product.name.toLowerCase().includes(term)) ||
+               (product.description && product.description.toLowerCase().includes(term));
+    });
+}
+
+// Función para actualizar la vista de productos
+function updateProductsView() {
+    const searchTerm = searchProductsInput ? searchProductsInput.value : '';
+    const filteredProducts = filterProducts(allProducts, searchTerm);
+    displayProducts(filteredProducts);
+}
+
+// Función para manejar la edición de producto
+async function handleEditProduct(productId) {
+    try {
+        // Cargar los datos del producto
+        const response = await fetch(`${API_URL}/products/${productId}`);
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar el producto');
+        }
+        
+        const product = await response.json();
+        
+        // Llenar el formulario con los datos del producto
+        document.getElementById('product-name').value = product.name || '';
+        document.getElementById('product-description').value = product.description || '';
+        document.getElementById('product-price').value = product.price || '';
+        document.getElementById('product-stock').value = product.stock || '';
+        document.getElementById('product-img-url').value = product.img_url || '';
+        
+        // Cambiar el título del modal
+        document.getElementById('modal-title').textContent = 'Editar Producto';
+        
+        // Guardar el ID del producto en el formulario
+        document.getElementById('product-form').setAttribute('data-product-id', productId);
+        
+        // Mostrar el modal
+        document.getElementById('product-modal').style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error al cargar el producto:', error);
+        alert(`❌ Error: ${error.message}`);
+    }
+}
+
+// Función para manejar la eliminación de producto
+async function handleDeleteProduct(productId) {
+    if (!confirm(`¿Estás seguro de que quieres eliminar este producto?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${productId}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al eliminar el producto');
+        }
+        
+        // Eliminar el producto del array
+        allProducts = allProducts.filter(p => p.id !== productId);
+        
+        // Actualizar la vista
+        updateProductsView();
+        
+        alert('✅ Producto eliminado correctamente');
+        
+    } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        alert(`❌ Error: ${error.message}`);
+    }
+}
+
+// Función para manejar el agregar producto
+function handleAddProduct() {
+    // Limpiar el formulario
+    document.getElementById('product-form').reset();
+    document.getElementById('product-form').removeAttribute('data-product-id');
+    document.getElementById('form-error').style.display = 'none';
+    
+    // Cambiar el título del modal
+    document.getElementById('modal-title').textContent = 'Agregar Producto';
+    
+    // Mostrar el modal
+    document.getElementById('product-modal').style.display = 'flex';
+}
+
+// Función para cerrar el modal
+function closeModal() {
+    document.getElementById('product-modal').style.display = 'none';
+    document.getElementById('product-form').reset();
+    document.getElementById('form-error').style.display = 'none';
+    document.getElementById('product-form').removeAttribute('data-product-id');
+}
+
+// Función para manejar el envío del formulario
+async function handleProductFormSubmit(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const productId = form.getAttribute('data-product-id');
+    const isEditing = !!productId;
+    
+    // Obtener los datos del formulario
+    const productData = {
+        name: document.getElementById('product-name').value.trim(),
+        description: document.getElementById('product-description').value.trim(),
+        price: parseFloat(document.getElementById('product-price').value),
+        stock: parseInt(document.getElementById('product-stock').value),
+        img_url: document.getElementById('product-img-url').value.trim() || 'images/placeholder.svg'
+    };
+    
+    // Validación básica
+    if (!productData.name || productData.price < 0 || productData.stock < 0) {
+        const errorDiv = document.getElementById('form-error');
+        errorDiv.textContent = 'Por favor, completa todos los campos correctamente.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // Ocultar error anterior
+    document.getElementById('form-error').style.display = 'none';
+    
+    // Deshabilitar el botón de guardar
+    const saveBtn = document.getElementById('save-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Guardando...';
+    
+    try {
+        const url = isEditing 
+            ? `${API_URL}/products/${productId}`
+            : `${API_URL}/products`;
+        
+        const method = isEditing ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            
+            // Crear un error con los detalles de validación
+            const error = new Error(errorData.error || 'Error al guardar el producto');
+            if (errorData.details) {
+                error.details = errorData.details;
+            }
+            throw error;
+        }
+        
+        const savedProduct = await response.json();
+        
+        // Cerrar el modal
+        closeModal();
+        
+        // Recargar los productos
+        await loadAllProducts();
+        
+        // Mostrar mensaje de éxito
+        alert(`✅ Producto ${isEditing ? 'actualizado' : 'creado'} correctamente`);
+        
+    } catch (error) {
+        console.error('Error al guardar el producto:', error);
+        const errorDiv = document.getElementById('form-error');
+        
+        // Si el error tiene detalles de validación, mostrarlos
+        if (error.details && Array.isArray(error.details)) {
+            const errorMessages = error.details.map(err => err.msg).join('<br>');
+            errorDiv.innerHTML = errorMessages;
+        } else {
+            errorDiv.textContent = error.message || 'Error al guardar el producto';
+        }
+        
+        errorDiv.style.display = 'block';
+    } finally {
+        // Rehabilitar el botón
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar';
+    }
 }
 
 // Event listeners
@@ -340,6 +686,15 @@ if (searchOrdersInput) {
     searchOrdersInput.addEventListener('input', updateOrdersView);
 }
 
+// Event listeners para productos
+if (addProductBtn) {
+    addProductBtn.addEventListener('click', handleAddProduct);
+}
+
+if (searchProductsInput) {
+    searchProductsInput.addEventListener('input', updateProductsView);
+}
+
 adminTabs.forEach(tab => {
     tab.addEventListener('click', () => {
         const tabName = tab.getAttribute('data-tab');
@@ -347,10 +702,48 @@ adminTabs.forEach(tab => {
     });
 });
 
-// Cargar pedidos cuando se carga la página
+// Cargar pedidos cuando se carga la página (solo si estamos en la pestaña de pedidos)
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar acceso de administrador antes de cargar
     if (checkAdminAccess()) {
-        loadAllOrders();
+        // Solo cargar pedidos si la pestaña de pedidos está activa
+        if (ordersTab && ordersTab.classList.contains('active')) {
+            loadAllOrders();
+        }
+    }
+});
+
+// Event listeners para el modal
+const productModal = document.getElementById('product-modal');
+const closeModalBtn = document.getElementById('close-modal');
+const cancelBtn = document.getElementById('cancel-btn');
+const productForm = document.getElementById('product-form');
+
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeModal);
+}
+
+if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeModal);
+}
+
+// Cerrar modal al hacer clic fuera de él
+if (productModal) {
+    productModal.addEventListener('click', (e) => {
+        if (e.target === productModal) {
+            closeModal();
+        }
+    });
+}
+
+// Manejar el envío del formulario
+if (productForm) {
+    productForm.addEventListener('submit', handleProductFormSubmit);
+}
+
+// Cerrar modal con la tecla Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && productModal && productModal.style.display === 'flex') {
+        closeModal();
     }
 });
