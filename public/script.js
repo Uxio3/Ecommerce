@@ -459,7 +459,7 @@ checkoutBtn.addEventListener('click', async () => {
         const result = await response.json();
         
         // Mostrar mensaje de éxito
-        alert(`✅ Pedido creado correctamente!\n\nID del pedido: ${result.order.id}\nTotal: ${formatPrice(result.order.total)}`);
+        toast.success('Pedido realizado correctamente');
         
         // Vaciar el carrito
         cart = [];
@@ -473,7 +473,7 @@ checkoutBtn.addEventListener('click', async () => {
     } catch (error) {
         // Si hay un error, mostrarlo al usuario
         console.error('Error al crear el pedido:', error);
-        alert(`❌ Error: ${error.message}`);
+        toast.error(`Error: ${error.message}`);
     } finally {
         // Rehabilitar el botón siempre (incluso si hubo error)
         checkoutBtn.disabled = false;

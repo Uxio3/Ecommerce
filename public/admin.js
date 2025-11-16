@@ -385,7 +385,7 @@ async function loadAllProducts() {
     
     try {
         // Mostrar loading
-        productsLoading.style.display = 'block';
+        setLoading(productsLoading, true);
         productsError.style.display = 'none';
         noProducts.style.display = 'none';
         productsContainer.innerHTML = '';
@@ -402,7 +402,7 @@ async function loadAllProducts() {
         const products = await response.json();
         
         // Ocultar loading
-        productsLoading.style.display = 'none';
+        setLoading(productsLoading, false);
         
         if (products && Array.isArray(products) && products.length > 0) {
             // Guardar todos los productos
@@ -587,7 +587,7 @@ async function handleEditProduct(productId) {
         
     } catch (error) {
         console.error('Error al cargar el producto:', error);
-        alert(`❌ Error: ${error.message}`);
+        toast.error(`Error: ${error.message}`);
     }
 }
 
@@ -611,7 +611,7 @@ async function handleRestoreProduct(productId) {
         // Recargar los productos
         await loadAllProducts();
         
-        alert('✅ Producto reactivado correctamente');
+        toast.success('Producto reactivado correctamente');
         
     } catch (error) {
         console.error('Error al reactivar producto:', error);
@@ -639,11 +639,11 @@ async function handleDeleteProduct(productId) {
         // Recargar los productos
         await loadAllProducts();
         
-        alert('✅ Producto eliminado correctamente');
+        toast.success('Producto eliminado correctamente');
         
     } catch (error) {
         console.error('Error al eliminar producto:', error);
-        alert(`❌ Error: ${error.message}`);
+        toast.error(`Error: ${error.message}`);
     }
 }
 
@@ -735,7 +735,7 @@ async function handleProductFormSubmit(e) {
         await loadAllProducts();
         
         // Mostrar mensaje de éxito
-        alert(`✅ Producto ${isEditing ? 'actualizado' : 'creado'} correctamente`);
+        toast.success(`Producto ${isEditing ? 'actualizado' : 'creado'} correctamente`);
         
     } catch (error) {
         console.error('Error al guardar el producto:', error);
@@ -746,7 +746,7 @@ async function handleProductFormSubmit(e) {
             const errorMessages = error.details.map(err => err.msg).join('<br>');
             errorDiv.innerHTML = errorMessages;
         } else {
-            errorDiv.textContent = error.message || 'Error al guardar el producto';
+            toast.error(error.message || 'Error al guardar el producto');
         }
         
         errorDiv.style.display = 'block';
@@ -754,6 +754,26 @@ async function handleProductFormSubmit(e) {
         // Rehabilitar el botón
         saveBtn.disabled = false;
         saveBtn.textContent = 'Guardar';
+    }
+}
+
+// Función para mostrar/ocultar loading con animación
+function setLoading(element, isLoading) {
+    if (!element) return;
+    
+    if (isLoading) {
+        element.style.display = 'block';
+        element.style.opacity = '0';
+        setTimeout(() => {
+            element.style.transition = 'opacity 0.3s ease';
+            element.style.opacity = '1';
+        }, 10);
+    } else {
+        element.style.transition = 'opacity 0.3s ease';
+        element.style.opacity = '0';
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 300);
     }
 }
 
