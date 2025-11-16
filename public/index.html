@@ -98,31 +98,79 @@
                 <!-- Los productos se cargarán aquí con JavaScript -->
             </div>
 
+            <!-- Paginación -->
+            <div id="pagination-container" class="pagination-container" style="display: none;">
+                <!-- Los controles de paginación se cargarán aquí -->
+            </div>
+
             <div id="error" class="error" style="display: none;">
                 Error al cargar los productos. Por favor, intenta de nuevo.
             </div>
         </main>
-    </div>
 
-            <!-- Panel del carrito (oculto por defecto) -->
-            <div id="cart-panel" class="cart-panel">
-                <div class="cart-header">
-                    <h2>Tu Carrito</h2>
-                    <button id="close-cart" class="close-cart">✕</button>
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🛒 Tienda Online</h3>
+                    <p>Tu tienda de confianza para encontrar los mejores productos al mejor precio.</p>
                 </div>
-                <div id="cart-items" class="cart-items">
-                    <!-- Los productos del carrito se mostrarán aquí -->
+                
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="orders-history.html">Mis Pedidos</a></li>
+                        <li><a href="login.html">Iniciar Sesión</a></li>
+                        <li><a href="register.html">Registrarse</a></li>
+                    </ul>
                 </div>
-                <div class="cart-footer">
-                    <div class="cart-total">
-                        <strong>Total: <span id="cart-total">0.00</span> €</strong>
-                    </div>
-                    <button id="checkout-btn" class="checkout-btn">Finalizar Compra</button>
+                
+                <div class="footer-section">
+                    <h4>Información</h4>
+                    <ul>
+                        <li><a href="#">Sobre Nosotros</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p>📧 Email: info@tiendaonline.com</p>
+                    <p>📞 Teléfono: +34 123 456 789</p>
+                    <p>📍 Dirección: Calle Ejemplo, 123</p>
                 </div>
             </div>
-    
-            <!-- Overlay para cerrar el carrito al hacer clic fuera -->
-            <div id="cart-overlay" class="cart-overlay"></div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Tienda Online. Todos los derechos reservados.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Panel del carrito (oculto por defecto) -->
+    <div id="cart-panel" class="cart-panel">
+        <div class="cart-header">
+            <h2>Tu Carrito</h2>
+            <button id="close-cart" class="close-cart">✕</button>
+        </div>
+        <div id="cart-items" class="cart-items">
+            <!-- Los productos del carrito se mostrarán aquí -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total: <span id="cart-total">0.00</span> €</strong>
+            </div>
+            <button id="checkout-btn" class="checkout-btn">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <!-- Overlay para cerrar el carrito al hacer clic fuera -->
+    <div id="cart-overlay" class="cart-overlay"></div>
+
+        
 
     <script src="toast.js"></script>
     <script src="script.js"></script>

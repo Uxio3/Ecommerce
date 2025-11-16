@@ -26,6 +26,10 @@ const userLogged = document.getElementById('user-logged');
 const userNameDisplay = document.getElementById('user-name-display');
 const logoutBtn = document.getElementById('logout-btn');
 
+let currentPage = 1;
+const productsPerPage = 12;
+let totalPages = 1;
+
 // Función para obtener el usuario actual desde localStorage
 function getCurrentUser() {
     const userStr = localStorage.getItem('user');
@@ -264,29 +268,45 @@ function removeFromCart(productId) {
     updateCartUI();
 }
 
-async function loadProducts() {
+async function loadProducts(page = 1) {
     try {
         // Mostrar loading
         loading.style.display = 'block';
-        productsContainer.style.display = 'none'; // Ocultar mientras carga
+        productsContainer.style.display = 'none';
         errorDiv.style.display = 'none';
+        document.getElementById('pagination-container').style.display = 'none';
 
-        // Hacer petición a la Api
-        const response = await fetch('http://localhost:3000/api/products');
+        // Hacer petición a la API con paginación
+        const response = await fetch(`http://localhost:3000/api/products?page=${page}&limit=${productsPerPage}`);
         
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
         
-        const products = await response.json();
-        allProducts = products;
+        const data = await response.json();
+        
+        // Verificar si la respuesta tiene paginación
+        if (data.pagination) {
+            // Respuesta paginada
+            allProducts = data.products;
+            currentPage = data.pagination.page;
+            totalPages = data.pagination.totalPages;
+            
+            // Mostrar paginación
+            displayPagination(data.pagination);
+        } else {
+            // Respuesta sin paginación (compatibilidad)
+            allProducts = data;
+            currentPage = 1;
+            totalPages = 1;
+        }
 
         // Ocultar loading y mostrar contenedor
         loading.style.display = 'none';
-        productsContainer.style.display = 'grid'; // ✅ Mostrar el contenedor
+        productsContainer.style.display = 'grid';
 
         // Mostrar productos (con filtros aplicados)
-        displayProducts(products);
+        displayProducts(allProducts);
 
     } catch (error) {
         console.error('Error:', error);
@@ -315,6 +335,74 @@ function displayProducts(products) {
         const card = createProductCard(product); // ✅ Cambiar de createAdminProductCard a createProductCard
         productsContainer.appendChild(card);
     });
+}
+
+// Función para mostrar los controles de paginación
+function displayPagination(pagination) {
+    const paginationContainer = document.getElementById('pagination-container');
+    if (!paginationContainer) return;
+    
+    if (pagination.totalPages <= 1) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+    
+    paginationContainer.style.display = 'flex';
+    
+    let html = '';
+    
+    // Botón "Anterior"
+    html += `<button class="pagination-btn" ${!pagination.hasPrev ? 'disabled' : ''} onclick="changePage(${pagination.page - 1})">
+        ← Anterior
+    </button>`;
+    
+    // Números de página
+    const maxVisible = 5;
+    let startPage = Math.max(1, pagination.page - Math.floor(maxVisible / 2));
+    let endPage = Math.min(pagination.totalPages, startPage + maxVisible - 1);
+    
+    if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+    
+    if (startPage > 1) {
+        html += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+        if (startPage > 2) {
+            html += `<span class="pagination-ellipsis">...</span>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<button class="pagination-btn ${i === pagination.page ? 'active' : ''}" onclick="changePage(${i})">
+            ${i}
+        </button>`;
+    }
+    
+    if (endPage < pagination.totalPages) {
+        if (endPage < pagination.totalPages - 1) {
+            html += `<span class="pagination-ellipsis">...</span>`;
+        }
+        html += `<button class="pagination-btn" onclick="changePage(${pagination.totalPages})">${pagination.totalPages}</button>`;
+    }
+    
+    // Botón "Siguiente"
+    html += `<button class="pagination-btn" ${!pagination.hasNext ? 'disabled' : ''} onclick="changePage(${pagination.page + 1})">
+        Siguiente →
+    </button>`;
+    
+    // Información de página
+    html += `<span class="pagination-info">Página ${pagination.page} de ${pagination.totalPages}</span>`;
+    
+    paginationContainer.innerHTML = html;
+}
+
+// Función para cambiar de página
+function changePage(page) {
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    loadProducts(page);
+    // Scroll hacia arriba
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Función para filtrar productos según la búsqueda y filtros
@@ -369,8 +457,17 @@ function filterProducts() {
         });
     }
     
-    // Mostrar los productos filtrados
+    // Mostrar productos filtrados
     displayProducts(filteredProducts);
+    
+    // Ocultar paginación cuando hay filtros activos
+    const hasFilters = searchTerm !== '' || priceFilterValue !== '' || stockFilterValue !== '';
+    if (hasFilters) {
+        document.getElementById('pagination-container').style.display = 'none';
+    } else {
+        // Si no hay filtros, recargar con paginación
+        loadProducts(currentPage);
+    }
 }
 
 // Función para limpiar todos los filtros

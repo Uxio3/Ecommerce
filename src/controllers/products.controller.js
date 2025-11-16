@@ -7,11 +7,25 @@ const {
     deleteProduct,
     getAllProductsIncludingDeleted,
     restoreProduct,
+    getProductsPaginated,
+    getAllProductsIncludingDeletedPaginated
 } = require('../services/products.service');
 
 // Obtiene los productos y responde con JSON o error
 async function getProducts(req, res) {
     try {
+        // Verificar si hay parámetros de paginación
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+        
+        // Si hay parámetros de paginación, usar la versión paginada
+        if (req.query.page || req.query.limit) {
+            const { getProductsPaginated } = require('../services/products.service');
+            const result = await getProductsPaginated(page, limit);
+            return res.json(result);
+        }
+        
+        // Si no hay paginación, devolver todos los productos (compatibilidad hacia atrás)
         const products = await getAllProducts();
         res.json(products);
     } catch (error) {
@@ -103,6 +117,20 @@ async function getAllProductsIncludingDeletedController(req, res) {
     }
 }
 
+// Obtiene todos los productos incluyendo eliminados con paginación (solo para admin)
+async function getAllProductsIncludingDeletedPaginatedController(req, res) {
+    try {
+        const { getAllProductsIncludingDeletedPaginated } = require('../services/products.service');
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+        const result = await getAllProductsIncludingDeletedPaginated(page, limit);
+        res.json(result);
+    } catch (error) {
+        console.error('Error al obtener productos:', error);
+        res.status(500).json({ error: 'Error al obtener productos' });
+    }
+}
+
 // Reactiva un producto eliminado
 async function restoreProductController(req, res) {
     try {
@@ -128,5 +156,6 @@ module.exports = {
     updateProductController,
     deleteProductController,
     getAllProductsIncludingDeletedController,
+    getAllProductsIncludingDeletedPaginatedController,
     restoreProductController
 };

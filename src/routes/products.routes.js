@@ -8,6 +8,7 @@ const {
     updateProductController,
     deleteProductController,
     getAllProductsIncludingDeletedController,
+    getAllProductsIncludingDeletedPaginatedController,
     restoreProductController,
 } = require('../controllers/products.controller');
 
@@ -26,5 +27,7 @@ router.put('/:id', requireAuth, requireAdmin, productValidationRules, validate, 
 router.delete('/:id', requireAuth, requireAdmin, deleteProductController);
 router.get('/admin/all', requireAuth, requireAdmin, getAllProductsIncludingDeletedController);
 router.put('/:id/restore', requireAuth, requireAdmin, restoreProductController);
+// GET /api/products/admin/all/paginated → obtiene productos paginados (admin)
+router.get('/admin/all/paginated', requireAuth, requireAdmin, getAllProductsIncludingDeletedPaginatedController);
 
 module.exports = router;

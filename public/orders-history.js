@@ -28,15 +28,15 @@ function getCurrentUser() {
 
 // Función para actualizar la UI según el estado del usuario
 function updateUserUI() {
-    const user = getCurrentUser();
-    
-    if (user) {
-        userNameDisplay.textContent = user.name;
-        userNotLogged.style.display = 'none';
-        userLogged.style.display = 'flex';
-    } else {
-        userNotLogged.style.display = 'flex';
-        userLogged.style.display = 'none';
+    // Mostrar/ocultar enlace de admin en el footer
+    const adminLinkFooter = document.getElementById('admin-link-footer');
+    if (adminLinkFooter) {
+        const user = getCurrentUser();
+        if (user && user.is_admin) {
+            adminLinkFooter.style.display = 'block';
+        } else {
+            adminLinkFooter.style.display = 'none';
+        }
     }
 }
 

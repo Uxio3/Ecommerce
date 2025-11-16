@@ -1402,3 +1402,174 @@ header p {
         max-width: 100%;
     }
 }
+
+/* Estilos de paginación */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 40px 0;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    padding: 10px 15px;
+    background: white;
+    border: 2px solid #5a8f7b;
+    border-radius: 8px;
+    color: #5a8f7b;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 45px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #5a8f7b;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(90, 143, 123, 0.3);
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, #5a8f7b 0%, #76b39d 100%);
+    color: white;
+    border-color: #5a8f7b;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f0f0f0;
+    border-color: #ddd;
+    color: #999;
+}
+
+.pagination-ellipsis {
+    padding: 0 5px;
+    color: #666;
+    font-weight: bold;
+}
+
+.pagination-info {
+    margin-left: 20px;
+    color: #666;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Responsive para paginación */
+@media (max-width: 768px) {
+    .pagination-container {
+        gap: 5px;
+    }
+    
+    .pagination-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        min-width: 40px;
+    }
+    
+    .pagination-info {
+        margin-left: 10px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Estilos del Footer */
+.main-footer {
+    background: linear-gradient(135deg, #2b2d42 0%, #1a1c2e 100%);
+    color: white;
+    margin-top: 60px;
+    padding: 40px 0 20px 0;
+    border-top: 3px solid #5a8f7b;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px; /* Exactamente igual que .container */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+}
+
+.footer-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #76b39d;
+}
+
+.footer-section h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #76b39d;
+}
+
+.footer-section p {
+    color: #e0e0e0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.footer-section ul li a:hover {
+    color: #76b39d;
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px 0 20px; /* Exactamente igual que .container */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.footer-bottom p {
+    color: #b0b0b0;
+    font-size: 0.9rem;
+}
+
+/* Responsive para el footer */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        padding: 0 20px;
+    }
+    
+    .footer-section {
+        text-align: center;
+    }
+    
+    .footer-section ul {
+        text-align: center;
+    }
+    
+    .footer-bottom {
+        padding: 20px 20px 0 20px;
+    }
+}

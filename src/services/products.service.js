@@ -7,6 +7,66 @@ async function getAllProducts() {
     return rows;
 }
 
+// Obtiene productos con paginación
+async function getProductsPaginated(page = 1, limit = 12) {
+    const offset = (page - 1) * limit;
+    
+    // Obtener productos paginados
+    const [rows] = await pool.query(
+        'SELECT * FROM products WHERE deleted = FALSE OR deleted IS NULL ORDER BY id DESC LIMIT ? OFFSET ?',
+        [limit, offset]
+    );
+    
+    // Obtener el total de productos
+    const [countResult] = await pool.query(
+        'SELECT COUNT(*) as total FROM products WHERE deleted = FALSE OR deleted IS NULL'
+    );
+    
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
+    
+    return {
+        products: rows,
+        pagination: {
+            page: page,
+            limit: limit,
+            total: total,
+            totalPages: totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1
+        }
+    };
+}
+
+// Obtiene todos los productos con paginación (incluyendo eliminados) - para admin
+async function getAllProductsIncludingDeletedPaginated(page = 1, limit = 12) {
+    const offset = (page - 1) * limit;
+    
+    // Obtener productos paginados
+    const [rows] = await pool.query(
+        'SELECT * FROM products ORDER BY deleted ASC, id DESC LIMIT ? OFFSET ?',
+        [limit, offset]
+    );
+    
+    // Obtener el total de productos
+    const [countResult] = await pool.query('SELECT COUNT(*) as total FROM products');
+    
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
+    
+    return {
+        products: rows,
+        pagination: {
+            page: page,
+            limit: limit,
+            total: total,
+            totalPages: totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1
+        }
+    };
+}
+
 // Obtiene un producto específico por su ID
 async function getProductById(id) {
     const [rows] = await pool.query('SELECT * FROM products WHERE id = ?', [id]);
@@ -64,10 +124,12 @@ async function restoreProduct(id) {
 
 module.exports = {
     getAllProducts,
+    getProductsPaginated,
     getProductById,
     createProduct,
     updateProduct,
     deleteProduct,
     getAllProductsIncludingDeleted,
+    getAllProductsIncludingDeletedPaginated,
     restoreProduct,
 };
